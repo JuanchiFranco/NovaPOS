@@ -15,6 +15,9 @@ function createMainWindow(): void {
     show: false,
     autoHideMenuBar: true,
     backgroundColor: '#0f172a',
+    // En producción el ícono queda embebido en el .exe por electron-builder;
+    // en desarrollo hay que indicarlo para que la ventana/taskbar no usen el de Electron por defecto.
+    ...(is.dev ? { icon: join(__dirname, '../../resources/icon.png') } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false
