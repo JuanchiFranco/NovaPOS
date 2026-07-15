@@ -8,6 +8,7 @@ import type {
   CategoriaDTO,
   ConfiguracionDTO,
   DashboardResumenDTO,
+  FacturaCompraDTO,
   FacturaDTO,
   PaginatedResult,
   ProductoDTO,
@@ -18,6 +19,8 @@ import type {
   ClienteListParams,
   ClienteUpdateInput,
   ConfiguracionUpdateInput,
+  FacturaCompraCreateInput,
+  FacturaCompraListParams,
   FacturaListParams,
   ProductoCreateInput,
   ProductoListParams,
@@ -65,6 +68,12 @@ const api = {
   },
   dashboard: {
     resumen: () => invoke<DashboardResumenDTO>(IPC.dashboard.resumen)
+  },
+  compras: {
+    list: (params?: FacturaCompraListParams) => invoke<PaginatedResult<FacturaCompraDTO>>(IPC.compras.list, params),
+    getById: (id: number) => invoke<FacturaCompraDTO>(IPC.compras.getById, id),
+    create: (input: FacturaCompraCreateInput) => invoke<FacturaCompraDTO>(IPC.compras.create, input),
+    remove: (id: number) => invoke<void>(IPC.compras.remove, id)
   },
   configuracion: {
     get: () => invoke<ConfiguracionDTO>(IPC.configuracion.get),

@@ -238,3 +238,37 @@ model DetalleFactura {
   @@index([facturaId])
   @@map("detalle_factura")
 }
+
+// ---------------------------------------------------------------------------
+// Compras a proveedores (registro contable; no afecta el stock)
+// ---------------------------------------------------------------------------
+
+model FacturaCompra {
+  id               Int             @id @default(autoincrement())
+  proveedorNombre  String
+  numeroFactura    String? // número/referencia de la factura del proveedor
+  fecha            DateTime        @default(now())
+  metodoPago       String? // EFECTIVO | TARJETA | TRANSFERENCIA
+  total            Float
+  notas            String?
+  detalle          DetalleCompra[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([fecha])
+  @@index([proveedorNombre])
+  @@map("facturas_compra")
+}
+
+model DetalleCompra {
+  id              Int           @id @default(autoincrement())
+  facturaCompraId Int
+  facturaCompra   FacturaCompra @relation(fields: [facturaCompraId], references: [id])
+  descripcion     String
+  cantidad        Int
+  valorUnitario   Float
+  subtotal        Float
+
+  @@index([facturaCompraId])
+  @@map("detalle_compra")
+}

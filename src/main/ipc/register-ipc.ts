@@ -17,6 +17,9 @@ import { registerFacturasIpc } from '../modules/facturas/facturas.ipc'
 import { DashboardRepository } from '../modules/dashboard/dashboard.repository'
 import { DashboardService } from '../modules/dashboard/dashboard.service'
 import { registerDashboardIpc } from '../modules/dashboard/dashboard.ipc'
+import { ComprasRepository } from '../modules/compras/compras.repository'
+import { ComprasService } from '../modules/compras/compras.service'
+import { registerComprasIpc } from '../modules/compras/compras.ipc'
 import { registerSistemaIpc } from '../modules/sistema/sistema.ipc'
 
 /**
@@ -41,6 +44,9 @@ export function registerAllIpcHandlers(prisma: PrismaClient): void {
 
   const dashboardService = new DashboardService(new DashboardRepository(prisma))
   registerDashboardIpc(dashboardService)
+
+  const comprasService = new ComprasService(new ComprasRepository(prisma))
+  registerComprasIpc(comprasService)
 
   registerSistemaIpc()
 }

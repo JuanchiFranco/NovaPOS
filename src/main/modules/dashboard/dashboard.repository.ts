@@ -76,6 +76,24 @@ export class DashboardRepository {
     return this.prisma.producto.findMany({ where: { id: { in: ids } }, include: { categoria: true } })
   }
 
+  async comprasMes() {
+    const inicioMes = startOfMonth(new Date())
+    const result = await this.prisma.facturaCompra.aggregate({
+      where: { fecha: { gte: inicioMes, lte: new Date() } },
+      _sum: { total: true },
+      _count: { id: true }
+    })
+    return { total: result._sum.total ?? 0, cantidad: result._count.id }
+  }
+
+  ultimasCompras(limit: number) {
+    return this.prisma.facturaCompra.findMany({
+      include: { detalle: true },
+      orderBy: { fecha: 'desc' },
+      take: limit
+    })
+  }
+
   async ventasPorDia(dias: number) {
     const desde = startOfDay(new Date(Date.now() - dias * 24 * 60 * 60 * 1000))
     // Prisma guarda los DateTime de SQLite como enteros (ms desde epoch), no como texto ISO;

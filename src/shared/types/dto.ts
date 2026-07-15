@@ -102,6 +102,28 @@ export interface FacturaDTO {
   fechaEmision: string
 }
 
+export type MetodoPagoCompra = 'EFECTIVO' | 'TARJETA' | 'TRANSFERENCIA'
+
+export interface DetalleCompraDTO {
+  id: number
+  descripcion: string
+  cantidad: number
+  valorUnitario: number
+  subtotal: number
+}
+
+export interface FacturaCompraDTO {
+  id: number
+  proveedorNombre: string
+  numeroFactura: string | null
+  fecha: string
+  metodoPago: MetodoPagoCompra | null
+  total: number
+  notas: string | null
+  detalle: DetalleCompraDTO[]
+  createdAt: string
+}
+
 export interface MovimientoInventarioDTO {
   id: number
   productoId: number
@@ -144,6 +166,8 @@ export interface DashboardResumenDTO {
   ultimasVentas: VentaDTO[]
   productosBajoStock: ProductoDTO[]
   ventasPorDia: { fecha: string; total: number }[]
+  comprasMes: { total: number; cantidad: number }
+  ultimasCompras: FacturaCompraDTO[]
 }
 
 export interface BackupInfo {

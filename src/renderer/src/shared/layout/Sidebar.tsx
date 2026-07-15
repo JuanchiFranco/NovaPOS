@@ -4,6 +4,7 @@ import {
   Users,
   Package,
   ShoppingCart,
+  ShoppingBag,
   FileText,
   Settings,
   Boxes
@@ -17,6 +18,7 @@ const links = [
   { to: '/productos', label: 'Productos', icon: Package },
   { to: '/clientes', label: 'Clientes', icon: Users },
   { to: '/inventario', label: 'Inventario', icon: Boxes },
+  { to: '/compras', label: 'Compras', icon: ShoppingBag },
   { to: '/configuracion', label: 'Configuración', icon: Settings }
 ]
 

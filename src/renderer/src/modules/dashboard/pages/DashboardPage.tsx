@@ -1,4 +1,4 @@
-import { AlertTriangle, DollarSign, Receipt, ShoppingBag } from 'lucide-react'
+import { AlertTriangle, DollarSign, Receipt, ShoppingBag, Truck } from 'lucide-react'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
 import { StatCard } from '../../../shared/components/StatCard'
@@ -29,35 +29,50 @@ export default function DashboardPage(): JSX.Element {
     <div>
       <PageHeader title="Dashboard" description="Resumen general del negocio en tiempo real." />
 
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Ventas de hoy"
-          value={formatCurrency(data.ventasHoy.total)}
-          hint={`${data.ventasHoy.cantidad} venta(s)`}
-          icon={<ShoppingBag className="h-5 w-5" />}
-        />
-        <StatCard
-          label="Ventas del mes"
-          value={formatCurrency(data.ventasMes.total)}
-          hint={`${data.ventasMes.cantidad} venta(s)`}
-          icon={<Receipt className="h-5 w-5" />}
-          tone="green"
-        />
-        <StatCard
-          label="Total facturado"
-          value={formatCurrency(data.totalFacturado)}
-          hint="Histórico"
-          icon={<DollarSign className="h-5 w-5" />}
-          tone="amber"
-        />
-        <StatCard
-          label="Productos con bajo stock"
-          value={String(data.productosBajoStock.length)}
-          hint="Requieren reposición"
-          icon={<AlertTriangle className="h-5 w-5" />}
-          tone="red"
-        />
-      </div>
+      <section className="mb-6">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Ventas</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <StatCard
+            label="Ventas de hoy"
+            value={formatCurrency(data.ventasHoy.total)}
+            hint={`${data.ventasHoy.cantidad} venta(s)`}
+            icon={<ShoppingBag className="h-5 w-5" />}
+          />
+          <StatCard
+            label="Ventas del mes"
+            value={formatCurrency(data.ventasMes.total)}
+            hint={`${data.ventasMes.cantidad} venta(s)`}
+            icon={<Receipt className="h-5 w-5" />}
+            tone="green"
+          />
+          <StatCard
+            label="Total facturado"
+            value={formatCurrency(data.totalFacturado)}
+            hint="Histórico"
+            icon={<DollarSign className="h-5 w-5" />}
+            tone="amber"
+          />
+        </div>
+      </section>
+
+      <section className="mb-6">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Compras e inventario</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <StatCard
+            label="Compras del mes"
+            value={formatCurrency(data.comprasMes.total)}
+            hint={`${data.comprasMes.cantidad} compra(s)`}
+            icon={<Truck className="h-5 w-5" />}
+          />
+          <StatCard
+            label="Productos con bajo stock"
+            value={String(data.productosBajoStock.length)}
+            hint="Requieren reposición"
+            icon={<AlertTriangle className="h-5 w-5" />}
+            tone="red"
+          />
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
@@ -106,6 +121,37 @@ export default function DashboardPage(): JSX.Element {
                     <p className="text-xs text-slate-400">{p.codigo}</p>
                   </div>
                   <Badge tone="red">{p.stock} / mín. {p.stockMinimo}</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-6">
+        <Card>
+          <h2 className="mb-4 font-medium text-slate-800 dark:text-slate-200">Últimas compras a proveedores</h2>
+          {data.ultimasCompras.length === 0 ? (
+            <EmptyState
+              title="Sin compras todavía"
+              description="Registra tu primera compra desde el módulo Compras."
+            />
+          ) : (
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              {data.ultimasCompras.map((compra) => (
+                <div key={compra.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                      {compra.proveedorNombre}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {formatDateTime(compra.fecha)}
+                      {compra.numeroFactura && ` · ${compra.numeroFactura}`}
+                    </p>
+                  </div>
+                  <span className="font-medium text-slate-800 dark:text-slate-100">
+                    {formatCurrency(compra.total)}
+                  </span>
                 </div>
               ))}
             </div>

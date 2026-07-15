@@ -11,6 +11,7 @@ const ProductosPage = lazy(() => import('../../modules/productos/pages/Productos
 const ClientesPage = lazy(() => import('../../modules/clientes/pages/ClientesPage'))
 const ConfiguracionPage = lazy(() => import('../../modules/configuracion/pages/ConfiguracionPage'))
 const InventarioPage = lazy(() => import('../../modules/inventario/pages/InventarioPage'))
+const ComprasPage = lazy(() => import('../../modules/compras/pages/ComprasPage'))
 
 function SuspenseFallback(): JSX.Element {
   return <Spinner />
@@ -28,6 +29,7 @@ export function AppRouter(): JSX.Element {
           <Route path="/productos" element={<ProductosPage />} />
           <Route path="/clientes" element={<ClientesPage />} />
           <Route path="/inventario" element={<InventarioPage />} />
+          <Route path="/compras" element={<ComprasPage />} />
           <Route path="/configuracion" element={<ConfiguracionPage />} />
         </Route>
       </Routes>

@@ -166,6 +166,30 @@ CREATE TABLE IF NOT EXISTS "detalle_factura" (
 );
 CREATE INDEX IF NOT EXISTS "detalle_factura_facturaId_idx" ON "detalle_factura" ("facturaId");
 
+CREATE TABLE IF NOT EXISTS "facturas_compra" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "proveedorNombre" TEXT NOT NULL,
+  "numeroFactura" TEXT,
+  "fecha" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "metodoPago" TEXT CHECK ("metodoPago" IN ('EFECTIVO','TARJETA','TRANSFERENCIA')),
+  "total" REAL NOT NULL,
+  "notas" TEXT,
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS "facturas_compra_fecha_idx" ON "facturas_compra" ("fecha");
+CREATE INDEX IF NOT EXISTS "facturas_compra_proveedorNombre_idx" ON "facturas_compra" ("proveedorNombre");
+
+CREATE TABLE IF NOT EXISTS "detalle_compra" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "facturaCompraId" INTEGER NOT NULL REFERENCES "facturas_compra"("id"),
+  "descripcion" TEXT NOT NULL,
+  "cantidad" INTEGER NOT NULL,
+  "valorUnitario" REAL NOT NULL,
+  "subtotal" REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS "detalle_compra_facturaCompraId_idx" ON "detalle_compra" ("facturaCompraId");
+
 -- Datos iniciales (idempotentes)
 INSERT INTO "configuracion" ("id", "nombreComercial", "eslogan", "mensajePie")
 SELECT 1, 'VARIEDADES J&A', 'VENTA DE: VELAS, VELADORAS Y MUCHO MAS',

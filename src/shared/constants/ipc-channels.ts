@@ -36,6 +36,12 @@ export const IPC = {
     movimientos: 'inventario:movimientos',
     ajustar: 'inventario:ajustar'
   },
+  compras: {
+    list: 'compras:list',
+    getById: 'compras:getById',
+    create: 'compras:create',
+    remove: 'compras:remove'
+  },
   dashboard: {
     resumen: 'dashboard:resumen'
   },

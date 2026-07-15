@@ -1,4 +1,4 @@
-import type { MetodoPago } from './dto'
+import type { MetodoPago, MetodoPagoCompra } from './dto'
 
 export interface ClienteListParams {
   search?: string
@@ -102,4 +102,27 @@ export interface AjusteInventarioInput {
   productoId: number
   cantidad: number
   motivo: string
+}
+
+export interface ItemCompraInput {
+  descripcion: string
+  cantidad: number
+  valorUnitario: number
+}
+
+export interface FacturaCompraCreateInput {
+  proveedorNombre: string
+  numeroFactura?: string
+  fecha?: string
+  metodoPago?: MetodoPagoCompra
+  notas?: string
+  items: ItemCompraInput[]
+}
+
+export interface FacturaCompraListParams {
+  proveedorNombre?: string
+  desde?: string
+  hasta?: string
+  page?: number
+  pageSize?: number
 }
