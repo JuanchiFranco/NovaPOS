@@ -11,6 +11,15 @@ extraResources:
     to: prisma/schema.prisma
   - from: prisma/init.sql
     to: prisma/init.sql
+  # electron-builder solo empaqueta node_modules que sean dependencias declaradas en
+  # package.json; ".prisma/client" es generado por Prisma y no cuenta como tal, así que
+  # se copia aparte (ver NODE_PATH en src/main/database/client.ts). "@prisma/client" se
+  # duplica aquí también porque ".prisma/client/default.js" lo referencia internamente
+  # y, al vivir fuera del asar, necesita resolverlo por la misma ruta NODE_PATH.
+  - from: node_modules/.prisma/client
+    to: .prisma/client
+  - from: node_modules/@prisma/client
+    to: '@prisma/client'
 asarUnpack:
   - '**/*.node'
 win:

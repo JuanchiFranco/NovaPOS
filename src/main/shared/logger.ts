@@ -9,8 +9,16 @@ function getLogFilePath(): string {
   return join(dir, 'app.log')
 }
 
+/** JSON.stringify no serializa message/stack de un Error (son no-enumerables); hay que extraerlos a mano. */
+function serializeMeta(meta: unknown): string {
+  if (meta instanceof Error) {
+    return JSON.stringify({ ...meta, message: meta.message, stack: meta.stack })
+  }
+  return JSON.stringify(meta)
+}
+
 function write(level: string, message: string, meta?: unknown): void {
-  const line = `[${new Date().toISOString()}] [${level}] ${message}${meta ? ' ' + JSON.stringify(meta) : ''}\n`
+  const line = `[${new Date().toISOString()}] [${level}] ${message}${meta ? ' ' + serializeMeta(meta) : ''}\n`
   // eslint-disable-next-line no-console
   console[level === 'ERROR' ? 'error' : 'log'](line.trim())
   try {

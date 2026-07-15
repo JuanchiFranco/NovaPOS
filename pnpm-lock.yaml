@@ -20,6 +20,12 @@ importers:
       better-sqlite3:
         specifier: ^11.3.0
         version: 11.10.0
+      bindings:
+        specifier: ^1.5.0
+        version: 1.5.0
+      file-uri-to-path:
+        specifier: ^1.0.0
+        version: 1.0.0
       jsbarcode:
         specifier: ^3.11.6
         version: 3.12.3
