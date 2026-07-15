@@ -1,4 +1,4 @@
-# Inventario y Ventas — App de escritorio
+# NovaPOS — App de escritorio
 
 Aplicación de escritorio offline para gestión de ventas e inventario, construida con Electron + React + TypeScript + Prisma (SQLite) + TailwindCSS, siguiendo una arquitectura modular por dominios (feature-based) con capas de repository / service / IPC.
 

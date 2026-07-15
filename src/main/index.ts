@@ -36,7 +36,7 @@ function createMainWindow(): void {
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.juanfranco.inventarioventas')
+  electronApp.setAppUserModelId('com.juanfranco.novapos')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

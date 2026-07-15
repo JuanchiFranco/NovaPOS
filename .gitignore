@@ -8,5 +8,11 @@ release
 .env.local
 prisma/dev.db
 prisma/dev.db-journal
+prisma/dev.db-shm
+prisma/dev.db-wal
 prisma/backups
+*.tsbuildinfo
 .DS_Store
+Thumbs.db
+.vscode
+.idea

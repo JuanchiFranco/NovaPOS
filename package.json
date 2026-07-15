@@ -1,7 +1,7 @@
 {
-  "name": "inventario-ventas-desktop",
+  "name": "novapos-desktop",
   "version": "1.0.0",
-  "description": "Aplicación de escritorio para gestión de ventas e inventario (offline)",
+  "description": "NovaPOS - Aplicación de escritorio para gestión de ventas e inventario (offline)",
   "author": "Juan Franco",
   "main": "./out/main/index.js",
   "private": true,

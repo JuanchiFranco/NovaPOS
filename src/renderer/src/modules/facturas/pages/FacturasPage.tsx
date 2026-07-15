@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Copy, Download, Eye, FileText, Printer } from 'lucide-react'
+import { Copy, Download, Eye, FileText } from 'lucide-react'
 import type { FacturaDTO, MetodoPago } from '@shared/types/dto'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
@@ -113,11 +113,8 @@ export default function FacturasPage(): JSX.Element {
       className: 'text-right',
       render: (f) => (
         <div className="flex justify-end gap-1">
-          <button onClick={() => setDetalle(f)} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" title="Ver">
+          <button onClick={() => setDetalle(f)} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" title="Ver / Imprimir">
             <Eye className="h-4 w-4" />
-          </button>
-          <button onClick={() => window.api.facturas.print(f.id)} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" title="Imprimir">
-            <Printer className="h-4 w-4" />
           </button>
           <button
             onClick={async () => {

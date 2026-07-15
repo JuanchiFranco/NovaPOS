@@ -23,12 +23,12 @@ const links = [
 function iniciales(nombre: string): string {
   const palabras = nombre.trim().split(/\s+/).filter(Boolean)
   const letras = palabras.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '')
-  return letras.join('') || 'IV'
+  return letras.join('') || 'NP'
 }
 
 export function Sidebar(): JSX.Element {
   const { data: config } = useConfiguracion()
-  const nombreComercial = config?.nombreComercial ?? 'Inventario y Ventas'
+  const nombreComercial = config?.nombreComercial ?? 'NovaPOS'
 
   return (
     <aside className="flex h-full w-60 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">

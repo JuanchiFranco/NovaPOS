@@ -1,5 +1,5 @@
-appId: com.juanfranco.inventarioventas
-productName: Inventario y Ventas
+appId: com.juanfranco.novapos
+productName: NovaPOS
 directories:
   buildResources: resources
   output: release

@@ -44,7 +44,7 @@ export function registerFacturasIpc(service: FacturasService): void {
   handle(IPC.facturas.print, async (id: number) => {
     let win: BrowserWindow | null = null
     try {
-      win = await createFacturaPrintWindow(id)
+      win = await createFacturaPrintWindow(id, { visible: true })
       await new Promise<void>((resolve, reject) => {
         win!.webContents.print({ silent: false, printBackground: true }, (success, errorType) => {
           if (success) resolve()
