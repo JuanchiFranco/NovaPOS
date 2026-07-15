@@ -1,0 +1,31 @@
+appId: com.juanfranco.inventarioventas
+productName: Inventario y Ventas
+directories:
+  buildResources: resources
+  output: release
+files:
+  - out/**/*
+  - package.json
+extraResources:
+  - from: prisma/schema.prisma
+    to: prisma/schema.prisma
+  - from: prisma/init.sql
+    to: prisma/init.sql
+asarUnpack:
+  - '**/*.node'
+win:
+  target: nsis
+  icon: resources/icon.png
+mac:
+  target: dmg
+  icon: resources/icon.png
+  category: public.app-category.business
+linux:
+  target: AppImage
+  icon: resources/icon.png
+  category: Office
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
