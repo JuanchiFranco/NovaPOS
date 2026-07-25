@@ -52,7 +52,12 @@ export function ClienteAutocomplete({
         onBlur={() => setTimeout(() => setOpen(false), 150)}
       />
       {open && search && (
-        <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+        <div
+          className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900"
+          // Evita que el input pierda el foco (onBlur) al hacer mousedown sobre un ítem;
+          // sin esto, el blur puede cerrar el dropdown antes de que el click llegue a disparar.
+          onMouseDown={(e) => e.preventDefault()}
+        >
           {(data?.data.length ?? 0) === 0 ? (
             <p className="px-3 py-2 text-sm text-slate-400">Sin coincidencias</p>
           ) : (
