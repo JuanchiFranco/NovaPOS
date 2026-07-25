@@ -23,7 +23,8 @@ export const IPC = {
     list: 'ventas:list',
     getById: 'ventas:getById',
     create: 'ventas:create',
-    anular: 'ventas:anular'
+    anular: 'ventas:anular',
+    remove: 'ventas:remove'
   },
   facturas: {
     list: 'facturas:list',

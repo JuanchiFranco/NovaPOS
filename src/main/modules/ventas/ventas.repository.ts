@@ -190,4 +190,35 @@ export class VentasRepository {
     if (!venta) throw new NotFoundError('Venta', id)
     return venta
   }
+
+  /** Elimina la venta y su factura por completo, devolviendo el stock si aún no había sido revertido. */
+  async remove(id: number): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const venta = await tx.venta.findUnique({
+        where: { id },
+        include: { detalle: true, factura: true }
+      })
+      if (!venta) throw new NotFoundError('Venta', id)
+
+      if (venta.estado !== 'ANULADA') {
+        for (const item of venta.detalle) {
+          const producto = await tx.producto.findUnique({ where: { id: item.productoId } })
+          if (producto) {
+            await tx.producto.update({
+              where: { id: producto.id },
+              data: { stock: producto.stock + item.cantidad }
+            })
+          }
+        }
+      }
+
+      await tx.movimientoInventario.deleteMany({ where: { ventaId: id } })
+      if (venta.factura) {
+        await tx.detalleFactura.deleteMany({ where: { facturaId: venta.factura.id } })
+        await tx.factura.delete({ where: { id: venta.factura.id } })
+      }
+      await tx.detalleVenta.deleteMany({ where: { ventaId: id } })
+      await tx.venta.delete({ where: { id } })
+    })
+  }
 }

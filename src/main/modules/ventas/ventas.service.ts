@@ -101,4 +101,8 @@ export class VentasService {
     const venta = await this.repo.anular(id)
     return toDTO(venta)
   }
+
+  async remove(id: number): Promise<void> {
+    await this.repo.remove(id)
+  }
 }

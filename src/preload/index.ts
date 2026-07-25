@@ -57,7 +57,8 @@ const api = {
     list: (params?: VentaListParams) => invoke<PaginatedResult<VentaDTO>>(IPC.ventas.list, params),
     getById: (id: number) => invoke<VentaDTO>(IPC.ventas.getById, id),
     create: (input: VentaCreateInput) => invoke<VentaDTO>(IPC.ventas.create, input),
-    anular: (id: number) => invoke<VentaDTO>(IPC.ventas.anular, id)
+    anular: (id: number) => invoke<VentaDTO>(IPC.ventas.anular, id),
+    remove: (id: number) => invoke<void>(IPC.ventas.remove, id)
   },
   facturas: {
     list: (params?: FacturaListParams) => invoke<PaginatedResult<FacturaDTO>>(IPC.facturas.list, params),

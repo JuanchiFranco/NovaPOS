@@ -20,3 +20,18 @@ export function useCreateVenta() {
     onError: (error: Error) => toast.error(error.message)
   })
 }
+
+export function useRemoveVenta() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => window.api.ventas.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ventas'] })
+      queryClient.invalidateQueries({ queryKey: ['facturas'] })
+      queryClient.invalidateQueries({ queryKey: ['productos'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      toast.success('Venta eliminada')
+    },
+    onError: (error: Error) => toast.error(error.message)
+  })
+}

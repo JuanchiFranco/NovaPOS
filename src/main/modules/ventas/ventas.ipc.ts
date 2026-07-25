@@ -8,4 +8,5 @@ export function registerVentasIpc(service: VentasService): void {
   handle(IPC.ventas.getById, (id: number) => service.getById(id))
   handle(IPC.ventas.create, (input: VentaCreateInput) => service.create(input))
   handle(IPC.ventas.anular, (id: number) => service.anular(id))
+  handle(IPC.ventas.remove, (id: number) => service.remove(id))
 }

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Copy, Download, Eye, FileText } from 'lucide-react'
+import { Copy, Download, Eye, FileText, Trash2 } from 'lucide-react'
 import type { FacturaDTO, MetodoPago } from '@shared/types/dto'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
@@ -10,10 +10,12 @@ import { Select } from '../../../shared/components/Select'
 import { Table, type Column } from '../../../shared/components/Table'
 import { Pagination } from '../../../shared/components/Pagination'
 import { Badge } from '../../../shared/components/Badge'
+import { ConfirmDialog } from '../../../shared/components/ConfirmDialog'
 import { ClienteAutocomplete } from '../../../shared/components/ClienteAutocomplete'
 import { formatCurrency, formatDateTime } from '../../../shared/lib/format'
 import { useCartStore } from '../../../shared/store/cart.store'
 import { useFacturas } from '../hooks/useFacturas'
+import { useRemoveVenta } from '../../ventas/hooks/useVentas'
 import { FacturaDetalleModal } from '../components/FacturaDetalleModal'
 
 const PAGE_SIZE = 10
@@ -32,6 +34,8 @@ export default function FacturasPage(): JSX.Element {
   const [page, setPage] = useState(1)
   const [detalle, setDetalle] = useState<FacturaDTO | null>(null)
   const [duplicando, setDuplicando] = useState<number | null>(null)
+  const [toDelete, setToDelete] = useState<FacturaDTO | null>(null)
+  const removeVentaMutation = useRemoveVenta()
 
   const params = useMemo(
     () => ({
@@ -134,6 +138,13 @@ export default function FacturasPage(): JSX.Element {
           >
             <Copy className="h-4 w-4" />
           </button>
+          <button
+            onClick={() => setToDelete(f)}
+            className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+            title="Eliminar venta"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
       )
     }
@@ -189,6 +200,18 @@ export default function FacturasPage(): JSX.Element {
       </Card>
 
       <FacturaDetalleModal factura={detalle} onClose={() => setDetalle(null)} />
+
+      <ConfirmDialog
+        open={Boolean(toDelete)}
+        title="Eliminar venta"
+        message={`¿Seguro que deseas eliminar la venta ${toDelete?.numero}? Se eliminará la factura asociada, se devolverá el stock de los productos vendidos, y esta acción no se puede deshacer.`}
+        danger
+        loading={removeVentaMutation.isPending}
+        onCancel={() => setToDelete(null)}
+        onConfirm={() => {
+          if (toDelete) removeVentaMutation.mutate(toDelete.ventaId, { onSuccess: () => setToDelete(null) })
+        }}
+      />
     </div>
   )
 }
