@@ -29,6 +29,7 @@ export function ProductoForm({ initialData, categorias, loading, onSubmit, onCan
       categoriaId: initialData?.categoriaId ?? undefined,
       precioCompra: initialData?.precioCompra ?? 0,
       precioVenta: initialData?.precioVenta ?? 0,
+      precioMayorista: initialData?.precioMayorista ?? null,
       stock: initialData?.stock ?? 0,
       stockMinimo: initialData?.stockMinimo ?? 5,
       descripcion: initialData?.descripcion ?? ''
@@ -42,6 +43,7 @@ export function ProductoForm({ initialData, categorias, loading, onSubmit, onCan
       categoriaId: initialData?.categoriaId ?? undefined,
       precioCompra: initialData?.precioCompra ?? 0,
       precioVenta: initialData?.precioVenta ?? 0,
+      precioMayorista: initialData?.precioMayorista ?? null,
       stock: initialData?.stock ?? 0,
       stockMinimo: initialData?.stockMinimo ?? 5,
       descripcion: initialData?.descripcion ?? ''
@@ -82,11 +84,19 @@ export function ProductoForm({ initialData, categorias, loading, onSubmit, onCan
           {...register('precioCompra')}
         />
         <Input
-          label="Precio de venta *"
+          label="Precio al detal *"
           type="number"
           step="0.01"
           error={errors.precioVenta?.message}
           {...register('precioVenta')}
+        />
+        <Input
+          label="Precio al por mayor"
+          type="number"
+          step="0.01"
+          hint="Déjalo vacío si no manejas precio mayorista para este producto"
+          error={errors.precioMayorista?.message}
+          {...register('precioMayorista')}
         />
       </div>
 

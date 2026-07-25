@@ -75,6 +75,8 @@ export default function FacturasPage(): JSX.Element {
             productoId: producto.id,
             nombre: producto.nombre,
             codigo: producto.codigo,
+            precioDetal: producto.precioVenta,
+            precioMayorista: producto.precioMayorista,
             precioUnitario: producto.precioVenta,
             cantidad: Math.min(d.cantidad, producto.stock),
             descuento: d.descuento,

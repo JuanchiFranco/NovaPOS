@@ -66,7 +66,12 @@ export default function ProductosPage(): JSX.Element {
     { header: 'Código', key: 'codigo', render: (p) => <span className="font-mono text-xs">{p.codigo}</span> },
     { header: 'Nombre', key: 'nombre', render: (p) => <span className="font-medium">{p.nombre}</span> },
     { header: 'Categoría', key: 'categoria', render: (p) => p.categoriaNombre ?? '—' },
-    { header: 'Precio venta', key: 'precioVenta', render: (p) => formatCurrency(p.precioVenta) },
+    { header: 'Precio detal', key: 'precioVenta', render: (p) => formatCurrency(p.precioVenta) },
+    {
+      header: 'Precio mayor',
+      key: 'precioMayorista',
+      render: (p) => (p.precioMayorista != null ? formatCurrency(p.precioMayorista) : '—')
+    },
     {
       header: 'Stock',
       key: 'stock',

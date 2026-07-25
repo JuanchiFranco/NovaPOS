@@ -9,6 +9,7 @@ import { Modal } from '../../../shared/components/Modal'
 import { useCartStore } from '../../../shared/store/cart.store'
 import { calcularTotales } from '../utils/calcularTotales'
 import { ClienteSelector } from '../components/ClienteSelector'
+import { TipoPrecioSelector } from '../components/TipoPrecioSelector'
 import { ProductoBuscador } from '../components/ProductoBuscador'
 import { CarritoTable } from '../components/CarritoTable'
 import { PagoPanel } from '../components/PagoPanel'
@@ -89,6 +90,9 @@ export default function VentasPage(): JSX.Element {
           </Card>
 
           <Card>
+            <div className="mb-3">
+              <TipoPrecioSelector />
+            </div>
             <h2 className="mb-3 font-medium text-slate-800 dark:text-slate-200">Productos</h2>
             <ProductoBuscador />
             <div className="mt-4">

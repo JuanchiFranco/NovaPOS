@@ -29,6 +29,7 @@ export interface ProductoCreateInput {
   categoriaNombre?: string
   precioCompra: number
   precioVenta: number
+  precioMayorista?: number | null
   stock: number
   stockMinimo: number
   descripcion?: string

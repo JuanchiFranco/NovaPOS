@@ -39,25 +39,35 @@ export function ensureDatabaseSchema(): string {
  * `CREATE TABLE IF NOT EXISTS` no altera tablas ya existentes, así que las columnas
  * agregadas después del primer arranque deben aplicarse aquí con ALTER TABLE.
  */
+function tableExists(db: Database.Database, name: string): boolean {
+  return Boolean(db.prepare('SELECT 1 FROM sqlite_master WHERE type = ? AND name = ?').get('table', name))
+}
+
 function addMissingColumns(db: Database.Database): void {
-  const tableExists = db
-    .prepare('SELECT 1 FROM sqlite_master WHERE type = ? AND name = ?')
-    .get('table', 'configuracion')
-  if (!tableExists) return // instalación nueva: init.sql crea la tabla ya con todas las columnas
+  if (tableExists(db, 'configuracion')) {
+    const columns = db.prepare('PRAGMA table_info("configuracion")').all() as { name: string }[]
+    const columnNames = new Set(columns.map((c) => c.name))
 
-  const columns = db.prepare('PRAGMA table_info("configuracion")').all() as { name: string }[]
-  const columnNames = new Set(columns.map((c) => c.name))
-
-  if (!columnNames.has('eslogan')) {
-    db.exec('ALTER TABLE "configuracion" ADD COLUMN "eslogan" TEXT')
-    db.prepare('UPDATE "configuracion" SET "eslogan" = ? WHERE "id" = 1 AND "eslogan" IS NULL').run(
-      'VENTA DE: VELAS, VELADORAS Y MUCHO MAS'
-    )
+    if (!columnNames.has('eslogan')) {
+      db.exec('ALTER TABLE "configuracion" ADD COLUMN "eslogan" TEXT')
+      db.prepare('UPDATE "configuracion" SET "eslogan" = ? WHERE "id" = 1 AND "eslogan" IS NULL').run(
+        'VENTA DE: VELAS, VELADORAS Y MUCHO MAS'
+      )
+    }
+    if (!columnNames.has('mensajePie')) {
+      db.exec('ALTER TABLE "configuracion" ADD COLUMN "mensajePie" TEXT')
+      db.prepare('UPDATE "configuracion" SET "mensajePie" = ? WHERE "id" = 1 AND "mensajePie" IS NULL').run(
+        'HACERCATE PARA TENER EL GUSTO DE ATENDERTE\n\nTODO LO PUEDO EN CRISTO QUE ME FORTALECE'
+      )
+    }
   }
-  if (!columnNames.has('mensajePie')) {
-    db.exec('ALTER TABLE "configuracion" ADD COLUMN "mensajePie" TEXT')
-    db.prepare('UPDATE "configuracion" SET "mensajePie" = ? WHERE "id" = 1 AND "mensajePie" IS NULL').run(
-      'HACERCATE PARA TENER EL GUSTO DE ATENDERTE\n\nTODO LO PUEDO EN CRISTO QUE ME FORTALECE'
-    )
+
+  if (tableExists(db, 'productos')) {
+    const columns = db.prepare('PRAGMA table_info("productos")').all() as { name: string }[]
+    const columnNames = new Set(columns.map((c) => c.name))
+
+    if (!columnNames.has('precioMayorista')) {
+      db.exec('ALTER TABLE "productos" ADD COLUMN "precioMayorista" REAL')
+    }
   }
 }

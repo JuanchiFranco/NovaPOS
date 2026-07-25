@@ -16,6 +16,7 @@ export function toProductoDTO(producto: ProductoConCategoria): ProductoDTO {
     categoriaNombre: producto.categoria?.nombre ?? null,
     precioCompra: producto.precioCompra,
     precioVenta: producto.precioVenta,
+    precioMayorista: producto.precioMayorista,
     stock: producto.stock,
     stockMinimo: producto.stockMinimo,
     descripcion: producto.descripcion,

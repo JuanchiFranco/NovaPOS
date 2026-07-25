@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS "productos" (
   "categoriaId" INTEGER REFERENCES "categorias"("id"),
   "precioCompra" REAL NOT NULL DEFAULT 0,
   "precioVenta" REAL NOT NULL,
+  "precioMayorista" REAL,
   "stock" INTEGER NOT NULL DEFAULT 0,
   "stockMinimo" INTEGER NOT NULL DEFAULT 5,
   "descripcion" TEXT,

@@ -77,6 +77,7 @@ export class ProductosRepository {
         categoriaId,
         precioCompra: input.precioCompra,
         precioVenta: input.precioVenta,
+        precioMayorista: input.precioMayorista,
         stock: input.stock,
         stockMinimo: input.stockMinimo,
         descripcion: input.descripcion
@@ -99,6 +100,7 @@ export class ProductosRepository {
         categoriaId,
         precioCompra: input.precioCompra,
         precioVenta: input.precioVenta,
+        precioMayorista: input.precioMayorista,
         stock: input.stock,
         stockMinimo: input.stockMinimo,
         descripcion: input.descripcion,

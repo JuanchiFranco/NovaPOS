@@ -32,6 +32,7 @@ export interface ProductoDTO {
   categoriaNombre: string | null
   precioCompra: number
   precioVenta: number
+  precioMayorista: number | null
   stock: number
   stockMinimo: number
   descripcion: string | null

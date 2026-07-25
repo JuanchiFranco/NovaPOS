@@ -1,21 +1,31 @@
 import { create } from 'zustand'
 import type { ProductoDTO } from '@shared/types/dto'
 
+export type TipoPrecio = 'DETAL' | 'MAYORISTA'
+
 export interface CartItem {
   productoId: number
   nombre: string
   codigo: string
+  precioDetal: number
+  precioMayorista: number | null
   precioUnitario: number
   cantidad: number
   descuento: number
   stockDisponible: number
 }
 
+function precioSegunTipo(item: { precioDetal: number; precioMayorista: number | null }, tipo: TipoPrecio): number {
+  return tipo === 'MAYORISTA' && item.precioMayorista != null ? item.precioMayorista : item.precioDetal
+}
+
 interface CartState {
   clienteId: number | null
   clienteNombre: string | null
+  tipoPrecio: TipoPrecio
   items: CartItem[]
   setCliente: (id: number | null, nombre: string | null) => void
+  setTipoPrecio: (tipo: TipoPrecio) => void
   addProducto: (producto: ProductoDTO) => void
   incrementar: (productoId: number) => void
   decrementar: (productoId: number) => void
@@ -29,8 +39,14 @@ interface CartState {
 export const useCartStore = create<CartState>((set) => ({
   clienteId: null,
   clienteNombre: null,
+  tipoPrecio: 'DETAL',
   items: [],
   setCliente: (id, nombre) => set({ clienteId: id, clienteNombre: nombre }),
+  setTipoPrecio: (tipo) =>
+    set((state) => ({
+      tipoPrecio: tipo,
+      items: state.items.map((i) => ({ ...i, precioUnitario: precioSegunTipo(i, tipo) }))
+    })),
   addProducto: (producto) =>
     set((state) => {
       const existing = state.items.find((i) => i.productoId === producto.id)
@@ -43,6 +59,10 @@ export const useCartStore = create<CartState>((set) => ({
           )
         }
       }
+      const nuevoItem = {
+        precioDetal: producto.precioVenta,
+        precioMayorista: producto.precioMayorista
+      }
       return {
         items: [
           ...state.items,
@@ -50,7 +70,9 @@ export const useCartStore = create<CartState>((set) => ({
             productoId: producto.id,
             nombre: producto.nombre,
             codigo: producto.codigo,
-            precioUnitario: producto.precioVenta,
+            precioDetal: nuevoItem.precioDetal,
+            precioMayorista: nuevoItem.precioMayorista,
+            precioUnitario: precioSegunTipo(nuevoItem, state.tipoPrecio),
             cantidad: 1,
             descuento: 0,
             stockDisponible: producto.stock
@@ -81,6 +103,6 @@ export const useCartStore = create<CartState>((set) => ({
       items: state.items.map((i) => (i.productoId === productoId ? { ...i, descuento: Math.max(0, descuento) } : i))
     })),
   removeItem: (productoId) => set((state) => ({ items: state.items.filter((i) => i.productoId !== productoId) })),
-  clear: () => set({ clienteId: null, clienteNombre: null, items: [] }),
-  cargarCarrito: (clienteId, clienteNombre, items) => set({ clienteId, clienteNombre, items })
+  clear: () => set({ clienteId: null, clienteNombre: null, tipoPrecio: 'DETAL', items: [] }),
+  cargarCarrito: (clienteId, clienteNombre, items) => set({ clienteId, clienteNombre, tipoPrecio: 'DETAL', items })
 }))
