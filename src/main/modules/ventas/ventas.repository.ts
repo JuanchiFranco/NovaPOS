@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import type { MetodoPago } from '@shared/types/dto'
 import { ConflictError, NotFoundError } from '../../shared/errors'
+import { registrarAuditoria } from '../auditoria/audit-logger'
 
 export interface CreateVentaTransactionInput {
   clienteId: number | null
@@ -153,6 +154,12 @@ export class VentasRepository {
       return venta.id
     })
 
+    await registrarAuditoria(this.prisma, 'venta', ventaId, 'CREATE', {
+      total: input.total,
+      metodoPago: input.metodoPago,
+      items: input.items.length
+    })
+
     const venta = await this.findById(ventaId)
     if (!venta) throw new NotFoundError('Venta', ventaId)
     return venta
@@ -185,6 +192,8 @@ export class VentasRepository {
       await tx.venta.update({ where: { id }, data: { estado: 'ANULADA' } })
       await tx.factura.update({ where: { ventaId: id }, data: { estado: 'ANULADA' } }).catch(() => undefined)
     })
+
+    await registrarAuditoria(this.prisma, 'venta', id, 'UPDATE', { accion: 'anulada' })
 
     const venta = await this.findById(id)
     if (!venta) throw new NotFoundError('Venta', id)
@@ -220,5 +229,7 @@ export class VentasRepository {
       await tx.detalleVenta.deleteMany({ where: { ventaId: id } })
       await tx.venta.delete({ where: { id } })
     })
+
+    await registrarAuditoria(this.prisma, 'venta', id, 'DELETE')
   }
 }

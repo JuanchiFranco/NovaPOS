@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import type { FacturaCompraListParams } from '@shared/types/requests'
+import { registrarAuditoria } from '../auditoria/audit-logger'
 
 const facturaCompraInclude = {
   detalle: true
@@ -53,8 +54,8 @@ export class ComprasRepository {
     return this.prisma.facturaCompra.findUnique({ where: { id }, include: facturaCompraInclude })
   }
 
-  create(input: CreateFacturaCompraInput) {
-    return this.prisma.facturaCompra.create({
+  async create(input: CreateFacturaCompraInput) {
+    const compra = await this.prisma.facturaCompra.create({
       data: {
         proveedorNombre: input.proveedorNombre,
         numeroFactura: input.numeroFactura,
@@ -66,6 +67,11 @@ export class ComprasRepository {
       },
       include: facturaCompraInclude
     })
+    await registrarAuditoria(this.prisma, 'compra', compra.id, 'CREATE', {
+      proveedorNombre: compra.proveedorNombre,
+      total: compra.total
+    })
+    return compra
   }
 
   async remove(id: number): Promise<void> {
@@ -73,5 +79,6 @@ export class ComprasRepository {
       this.prisma.detalleCompra.deleteMany({ where: { facturaCompraId: id } }),
       this.prisma.facturaCompra.delete({ where: { id } })
     ])
+    await registrarAuditoria(this.prisma, 'compra', id, 'DELETE')
   }
 }

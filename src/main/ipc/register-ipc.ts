@@ -21,6 +21,20 @@ import { ComprasRepository } from '../modules/compras/compras.repository'
 import { ComprasService } from '../modules/compras/compras.service'
 import { registerComprasIpc } from '../modules/compras/compras.ipc'
 import { registerSistemaIpc } from '../modules/sistema/sistema.ipc'
+import { InventarioRepository } from '../modules/inventario/inventario.repository'
+import { InventarioService } from '../modules/inventario/inventario.service'
+import { registerInventarioIpc } from '../modules/inventario/inventario.ipc'
+import { ReportesRepository } from '../modules/reportes/reportes.repository'
+import { ReportesService } from '../modules/reportes/reportes.service'
+import { registerReportesIpc } from '../modules/reportes/reportes.ipc'
+import { UsuariosRepository } from '../modules/usuarios/usuarios.repository'
+import { UsuariosService } from '../modules/usuarios/usuarios.service'
+import { registerUsuariosIpc } from '../modules/usuarios/usuarios.ipc'
+import { AuthService } from '../modules/auth/auth.service'
+import { registerAuthIpc } from '../modules/auth/auth.ipc'
+import { AuditoriaRepository } from '../modules/auditoria/auditoria.repository'
+import { AuditoriaService } from '../modules/auditoria/auditoria.service'
+import { registerAuditoriaIpc } from '../modules/auditoria/auditoria.ipc'
 
 /**
  * Composition root: cablea repository -> service -> ipc para cada módulo.
@@ -40,13 +54,29 @@ export function registerAllIpcHandlers(prisma: PrismaClient): void {
   registerVentasIpc(ventasService)
 
   const facturasService = new FacturasService(new FacturasRepository(prisma))
-  registerFacturasIpc(facturasService)
+  registerFacturasIpc(facturasService, configuracionService)
 
   const dashboardService = new DashboardService(new DashboardRepository(prisma))
   registerDashboardIpc(dashboardService)
 
   const comprasService = new ComprasService(new ComprasRepository(prisma))
   registerComprasIpc(comprasService)
+
+  const inventarioService = new InventarioService(new InventarioRepository(prisma))
+  registerInventarioIpc(inventarioService)
+
+  const reportesService = new ReportesService(new ReportesRepository(prisma))
+  registerReportesIpc(reportesService, configuracionService)
+
+  const usuariosRepository = new UsuariosRepository(prisma)
+  const usuariosService = new UsuariosService(usuariosRepository)
+  registerUsuariosIpc(usuariosService)
+
+  const authService = new AuthService(usuariosRepository)
+  registerAuthIpc(authService)
+
+  const auditoriaService = new AuditoriaService(new AuditoriaRepository(prisma))
+  registerAuditoriaIpc(auditoriaService)
 
   registerSistemaIpc()
 }

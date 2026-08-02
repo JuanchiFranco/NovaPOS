@@ -69,4 +69,9 @@ export class ConfiguracionService {
     const updated = await this.repo.updateLogoPath(logoPath)
     return toDTO(updated)
   }
+
+  async setImpresora(nombre: string): Promise<ConfiguracionDTO> {
+    const updated = await this.repo.updateImpresoraPredeterminada(nombre)
+    return toDTO(updated)
+  }
 }

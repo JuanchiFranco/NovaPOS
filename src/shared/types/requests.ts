@@ -1,4 +1,11 @@
-import type { MetodoPago, MetodoPagoCompra } from './dto'
+import type {
+  MetodoPago,
+  MetodoPagoCompra,
+  ReporteAgrupacion,
+  ReporteComprasAgrupacion,
+  ReporteFormato,
+  TipoMovimiento
+} from './dto'
 
 export interface ClienteListParams {
   search?: string
@@ -101,6 +108,7 @@ export interface MovimientoInventarioListParams {
 
 export interface AjusteInventarioInput {
   productoId: number
+  tipo: TipoMovimiento
   cantidad: number
   motivo: string
 }
@@ -122,6 +130,60 @@ export interface FacturaCompraCreateInput {
 
 export interface FacturaCompraListParams {
   proveedorNombre?: string
+  desde?: string
+  hasta?: string
+  page?: number
+  pageSize?: number
+}
+
+export interface ReporteVentasParams {
+  desde?: string
+  hasta?: string
+  agrupacion: ReporteAgrupacion
+  clienteId?: number
+  productoId?: number
+  categoriaId?: number
+  metodoPago?: MetodoPago
+}
+
+export interface ReporteComprasParams {
+  desde?: string
+  hasta?: string
+  agrupacion: ReporteComprasAgrupacion
+  proveedorNombre?: string
+}
+
+export interface ReporteExportInput<T> {
+  params: T
+  formato: ReporteFormato
+}
+
+export interface LoginInput {
+  usuario: string
+  password: string
+}
+
+export interface UsuarioCreateInput {
+  nombre: string
+  usuario: string
+  password: string
+  rolId: number
+}
+
+export type UsuarioUpdateInput = Partial<Omit<UsuarioCreateInput, 'password'>> & {
+  activo?: boolean
+  password?: string
+}
+
+export interface CambiarPasswordInput {
+  actual: string
+  nueva: string
+}
+
+export interface AuditoriaListParams {
+  entidad?: string
+  accion?: string
+  usuarioId?: number
   desde?: string
   hasta?: string
   page?: number

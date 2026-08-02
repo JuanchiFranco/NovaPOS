@@ -1,5 +1,6 @@
 import type { PrismaClient } from '@prisma/client'
 import type { ConfiguracionUpdateInput } from '@shared/types/requests'
+import { registrarAuditoria } from '../auditoria/audit-logger'
 
 /** Acceso a datos de configuración. Solo existe un registro (id = 1). */
 export class ConfiguracionRepository {
@@ -12,14 +13,26 @@ export class ConfiguracionRepository {
   }
 
   async update(input: ConfiguracionUpdateInput) {
-    return this.prisma.configuracion.upsert({
+    const config = await this.prisma.configuracion.upsert({
       where: { id: 1 },
       create: { id: 1, ...input },
       update: { ...input }
     })
+    await registrarAuditoria(this.prisma, 'configuracion', config.id, 'UPDATE')
+    return config
   }
 
   async updateLogoPath(logoPath: string) {
     return this.prisma.configuracion.update({ where: { id: 1 }, data: { logoPath } })
+  }
+
+  async updateImpresoraPredeterminada(impresoraPredeterminada: string) {
+    const config = await this.prisma.configuracion.upsert({
+      where: { id: 1 },
+      create: { id: 1, impresoraPredeterminada },
+      update: { impresoraPredeterminada }
+    })
+    await registrarAuditoria(this.prisma, 'configuracion', config.id, 'UPDATE', { impresoraPredeterminada })
+    return config
   }
 }
