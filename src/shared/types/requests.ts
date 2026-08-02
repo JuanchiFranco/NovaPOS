@@ -1,4 +1,4 @@
-import type { MetodoPago, MetodoPagoCompra } from './dto'
+import type { MetodoPago, MetodoPagoCompra, TipoMovimiento } from './dto'
 
 export interface ClienteListParams {
   search?: string
@@ -101,6 +101,7 @@ export interface MovimientoInventarioListParams {
 
 export interface AjusteInventarioInput {
   productoId: number
+  tipo: TipoMovimiento
   cantidad: number
   motivo: string
 }

@@ -10,11 +10,13 @@ import type {
   DashboardResumenDTO,
   FacturaCompraDTO,
   FacturaDTO,
+  MovimientoInventarioDTO,
   PaginatedResult,
   ProductoDTO,
   VentaDTO
 } from '@shared/types/dto'
 import type {
+  AjusteInventarioInput,
   ClienteCreateInput,
   ClienteListParams,
   ClienteUpdateInput,
@@ -22,6 +24,7 @@ import type {
   FacturaCompraCreateInput,
   FacturaCompraListParams,
   FacturaListParams,
+  MovimientoInventarioListParams,
   ProductoCreateInput,
   ProductoListParams,
   ProductoUpdateInput,
@@ -69,6 +72,11 @@ const api = {
   },
   dashboard: {
     resumen: () => invoke<DashboardResumenDTO>(IPC.dashboard.resumen)
+  },
+  inventario: {
+    movimientos: (params?: MovimientoInventarioListParams) =>
+      invoke<PaginatedResult<MovimientoInventarioDTO>>(IPC.inventario.movimientos, params),
+    ajustar: (input: AjusteInventarioInput) => invoke<MovimientoInventarioDTO>(IPC.inventario.ajustar, input)
   },
   compras: {
     list: (params?: FacturaCompraListParams) => invoke<PaginatedResult<FacturaCompraDTO>>(IPC.compras.list, params),

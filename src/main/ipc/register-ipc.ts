@@ -21,6 +21,9 @@ import { ComprasRepository } from '../modules/compras/compras.repository'
 import { ComprasService } from '../modules/compras/compras.service'
 import { registerComprasIpc } from '../modules/compras/compras.ipc'
 import { registerSistemaIpc } from '../modules/sistema/sistema.ipc'
+import { InventarioRepository } from '../modules/inventario/inventario.repository'
+import { InventarioService } from '../modules/inventario/inventario.service'
+import { registerInventarioIpc } from '../modules/inventario/inventario.ipc'
 
 /**
  * Composition root: cablea repository -> service -> ipc para cada módulo.
@@ -47,6 +50,9 @@ export function registerAllIpcHandlers(prisma: PrismaClient): void {
 
   const comprasService = new ComprasService(new ComprasRepository(prisma))
   registerComprasIpc(comprasService)
+
+  const inventarioService = new InventarioService(new InventarioRepository(prisma))
+  registerInventarioIpc(inventarioService)
 
   registerSistemaIpc()
 }
