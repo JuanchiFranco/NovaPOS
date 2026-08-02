@@ -61,7 +61,7 @@ prisma/
 
 Cada módulo de negocio sigue **Repository Pattern + Service Layer**: el repository solo hace consultas Prisma, el service aplica las reglas de negocio y validación (Zod), y el archivo `.ipc.ts` expone esas operaciones al renderer via `ipcMain.handle`, siempre devolviendo un `ApiResult<T>` uniforme (nunca lanza errores crudos hacia la UI).
 
-## Qué incluye esta primera fase
+## Qué incluye la fase 1
 
 - **Dashboard** con KPIs (ventas de hoy/mes, total facturado, productos más vendidos, últimas ventas, alertas de stock bajo) y gráficos.
 - **Clientes**: CRUD completo con búsqueda por nombre/documento/teléfono.
@@ -71,14 +71,25 @@ Cada módulo de negocio sigue **Repository Pattern + Service Layer**: el reposit
 - **Configuración**: datos del negocio, logo, % de IVA, moneda, prefijo y numeración de facturas.
 - **Backups automáticos** de la base de datos SQLite (al iniciar y cada 6 horas) con posibilidad de restaurar desde el main process.
 
-## Próximas fases (no incluidas todavía)
+## Qué agrega la fase 2
 
-- Módulo de **Inventario** completo (entradas/salidas manuales, historial de movimientos, ajustes) — hoy el stock ya se actualiza automáticamente con cada venta y se muestran alertas, pero falta la pantalla de movimientos detallada.
-- Módulo de **Reportes** (por día/semana/mes/año/cliente/producto/categoría/método de pago) con exportación a PDF/Excel/CSV.
-- **Autenticación** con usuarios y roles (las tablas ya existen en el esquema de base de datos).
-- **Registro de auditoría** expuesto en la interfaz (la tabla y el mecanismo de registro ya existen a nivel de base de datos).
-- Restauración de backups y gestión de impresoras desde la pantalla de Configuración.
+- **Inventario**: historial completo de movimientos (entradas, salidas y ajustes manuales por conteo físico), además de los movimientos automáticos generados por cada venta. Filtro por tipo y alerta de productos con stock bajo.
+- **Reportes** de ventas y compras agrupables por día, semana, mes, año, cliente, producto, categoría o método de pago, con filtros combinables y exportación a **PDF, Excel (.xlsx) y CSV**.
+- **Autenticación** con usuarios y roles (Administrador / Vendedor): pantalla de login, sesión por ventana, cambio de contraseña propio, gestión de usuarios (crear, editar, desactivar) restringida a administradores. Se crea automáticamente un usuario inicial `admin` / `admin123` la primera vez que se abre la app — **cámbialo después de iniciar sesión**.
+- **Auditoría**: registro automático de creaciones, actualizaciones y eliminaciones en productos, clientes, ventas, compras, configuración y usuarios, con una pantalla de solo lectura (filtrable por entidad, acción, usuario y fecha) visible solo para administradores.
+- **Configuración → Sistema**: crear y restaurar backups manuales desde la interfaz, y elegir la impresora predeterminada para imprimir facturas sin mostrar el diálogo del sistema operativo.
+
+### Pendiente / mejoras futuras
+
+- Editor de permisos por rol desde la interfaz (hoy los permisos de cada rol se definen en el backend; el rol solo controla el acceso a Configuración/Usuarios/Auditoría).
+- Gráficos en la pantalla de Reportes (hoy es tabular; el Dashboard sí incluye gráficos).
 
 ## Nota sobre la instalación de dependencias
 
-Este proyecto se generó y revisó en un entorno sin acceso a la red, por lo que **no fue posible ejecutar `pnpm install` ni compilar el proyecto** en ese entorno. El código fue escrito y revisado cuidadosamente a mano (incluyendo una revisión manual de tipos e imports), pero se recomienda ejecutar `pnpm install`, `pnpm dev` y `pnpm build` en tu máquina como primer paso para detectar cualquier ajuste menor de versiones de dependencias.
+Este proyecto se generó y revisó en un entorno sin acceso a la red, por lo que **no fue posible ejecutar `pnpm install` ni compilar el proyecto** en ese entorno. El código fue escrito y revisado cuidadosamente a mano (incluyendo una revisión manual de tipos e imports; en la fase 2 además se verificó con `tsc --noEmit` sobre las dos configuraciones del proyecto), pero se recomienda ejecutar `pnpm install`, `pnpm dev` y `pnpm build` en tu máquina como primer paso para detectar cualquier ajuste menor de versiones de dependencias.
+
+> La fase 2 agrega `xlsx` (SheetJS) como dependencia nueva para la exportación de reportes a Excel. Si vienes de la fase 1, corre `pnpm install` de nuevo para que se agregue al lockfile y a `node_modules`.
+
+## Seguridad: usuario administrador inicial
+
+Al iniciar la app por primera vez se crea automáticamente un usuario administrador (`admin` / `admin123`) para poder entrar y configurar el negocio. **Cambia esta contraseña desde Configuración → "Cambiar mi contraseña" en cuanto inicies sesión**, especialmente antes de usar la app en un equipo compartido o de cara al público.

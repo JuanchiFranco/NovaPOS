@@ -71,7 +71,7 @@ export function Sidebar(): JSX.Element {
         ))}
       </nav>
       <div className="border-t border-slate-200 p-4 text-xs text-slate-400 dark:border-slate-800">
-        v1.0.0 · Funciona sin conexión
+        v1.1.0 · Funciona sin conexión
       </div>
     </aside>
   )
