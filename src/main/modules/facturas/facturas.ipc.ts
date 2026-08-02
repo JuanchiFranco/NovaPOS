@@ -5,10 +5,11 @@ import { handle } from '../../shared/ipc-handler'
 import { AppError } from '../../shared/errors'
 import { logger } from '../../shared/logger'
 import type { FacturasService } from './facturas.service'
+import type { ConfiguracionService } from '../configuracion/configuracion.service'
 import type { FacturaListParams } from '@shared/types/requests'
 import { createFacturaPrintWindow } from './print-window'
 
-export function registerFacturasIpc(service: FacturasService): void {
+export function registerFacturasIpc(service: FacturasService, configuracionService: ConfiguracionService): void {
   handle(IPC.facturas.list, (params: FacturaListParams) => service.list(params ?? {}))
   handle(IPC.facturas.getById, (id: number) => service.getById(id))
   handle(IPC.facturas.getByVentaId, (ventaId: number) => service.getByVentaId(ventaId))
@@ -44,12 +45,19 @@ export function registerFacturasIpc(service: FacturasService): void {
   handle(IPC.facturas.print, async (id: number) => {
     let win: BrowserWindow | null = null
     try {
+      const config = await configuracionService.get()
       win = await createFacturaPrintWindow(id, { visible: true })
       await new Promise<void>((resolve, reject) => {
-        win!.webContents.print({ silent: false, printBackground: true }, (success, errorType) => {
-          if (success) resolve()
-          else reject(new AppError(errorType || 'No se pudo imprimir la factura.'))
-        })
+        // Si hay una impresora predeterminada configurada, se imprime directo sin mostrar el diálogo del sistema.
+        win!.webContents.print(
+          config.impresoraPredeterminada
+            ? { silent: true, printBackground: true, deviceName: config.impresoraPredeterminada }
+            : { silent: false, printBackground: true },
+          (success, errorType) => {
+            if (success) resolve()
+            else reject(new AppError(errorType || 'No se pudo imprimir la factura.'))
+          }
+        )
       })
       return true
     } finally {

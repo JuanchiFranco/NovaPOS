@@ -49,7 +49,8 @@ export const IPC = {
   configuracion: {
     get: 'configuracion:get',
     update: 'configuracion:update',
-    seleccionarLogo: 'configuracion:seleccionarLogo'
+    seleccionarLogo: 'configuracion:seleccionarLogo',
+    setImpresora: 'configuracion:setImpresora'
   },
   reportes: {
     ventas: 'reportes:ventas',
@@ -60,6 +61,24 @@ export const IPC = {
   sistema: {
     backupNow: 'sistema:backupNow',
     restoreBackup: 'sistema:restoreBackup',
-    listBackups: 'sistema:listBackups'
+    listBackups: 'sistema:listBackups',
+    listarImpresoras: 'sistema:listarImpresoras'
+  },
+  auth: {
+    login: 'auth:login',
+    logout: 'auth:logout',
+    me: 'auth:me',
+    cambiarPassword: 'auth:cambiarPassword'
+  },
+  usuarios: {
+    list: 'usuarios:list',
+    create: 'usuarios:create',
+    update: 'usuarios:update',
+    remove: 'usuarios:remove',
+    roles: 'usuarios:roles'
+  },
+  auditoria: {
+    list: 'auditoria:list',
+    entidades: 'auditoria:entidades'
   }
 } as const

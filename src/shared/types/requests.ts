@@ -157,3 +157,35 @@ export interface ReporteExportInput<T> {
   params: T
   formato: ReporteFormato
 }
+
+export interface LoginInput {
+  usuario: string
+  password: string
+}
+
+export interface UsuarioCreateInput {
+  nombre: string
+  usuario: string
+  password: string
+  rolId: number
+}
+
+export type UsuarioUpdateInput = Partial<Omit<UsuarioCreateInput, 'password'>> & {
+  activo?: boolean
+  password?: string
+}
+
+export interface CambiarPasswordInput {
+  actual: string
+  nueva: string
+}
+
+export interface AuditoriaListParams {
+  entidad?: string
+  accion?: string
+  usuarioId?: number
+  desde?: string
+  hasta?: string
+  page?: number
+  pageSize?: number
+}

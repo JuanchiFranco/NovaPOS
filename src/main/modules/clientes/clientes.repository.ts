@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import type { ClienteCreateInput, ClienteListParams, ClienteUpdateInput } from '@shared/types/requests'
+import { registrarAuditoria } from '../auditoria/audit-logger'
 
 export class ClientesRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -30,20 +31,28 @@ export class ClientesRepository {
     return this.prisma.cliente.findUnique({ where: { id } })
   }
 
-  create(input: ClienteCreateInput) {
-    return this.prisma.cliente.create({ data: input })
+  async create(input: ClienteCreateInput) {
+    const cliente = await this.prisma.cliente.create({ data: input })
+    await registrarAuditoria(this.prisma, 'cliente', cliente.id, 'CREATE', { nombre: cliente.nombre })
+    return cliente
   }
 
-  update(id: number, input: ClienteUpdateInput) {
-    return this.prisma.cliente.update({ where: { id }, data: input })
+  async update(id: number, input: ClienteUpdateInput) {
+    const cliente = await this.prisma.cliente.update({ where: { id }, data: input })
+    await registrarAuditoria(this.prisma, 'cliente', cliente.id, 'UPDATE', { nombre: cliente.nombre })
+    return cliente
   }
 
   /** Baja lógica: nunca se elimina físicamente si tiene ventas asociadas. */
   async remove(id: number) {
     const ventasCount = await this.prisma.venta.count({ where: { clienteId: id } })
     if (ventasCount > 0) {
-      return this.prisma.cliente.update({ where: { id }, data: { activo: false } })
+      const cliente = await this.prisma.cliente.update({ where: { id }, data: { activo: false } })
+      await registrarAuditoria(this.prisma, 'cliente', id, 'UPDATE', { accion: 'desactivado' })
+      return cliente
     }
-    return this.prisma.cliente.delete({ where: { id } })
+    const cliente = await this.prisma.cliente.delete({ where: { id } })
+    await registrarAuditoria(this.prisma, 'cliente', id, 'DELETE', { nombre: cliente.nombre })
+    return cliente
   }
 }

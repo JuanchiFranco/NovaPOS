@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 import { IPC } from '@shared/constants/ipc-channels'
 import type {
   ApiResult,
+  AuditoriaDTO,
   BackupInfo,
   ClienteDTO,
   CategoriaDTO,
@@ -10,15 +11,20 @@ import type {
   DashboardResumenDTO,
   FacturaCompraDTO,
   FacturaDTO,
+  ImpresoraDTO,
   MovimientoInventarioDTO,
   PaginatedResult,
   ProductoDTO,
   ReporteComprasDTO,
   ReporteVentasDTO,
+  RolDTO,
+  UsuarioDTO,
   VentaDTO
 } from '@shared/types/dto'
 import type {
   AjusteInventarioInput,
+  AuditoriaListParams,
+  CambiarPasswordInput,
   ClienteCreateInput,
   ClienteListParams,
   ClienteUpdateInput,
@@ -26,6 +32,7 @@ import type {
   FacturaCompraCreateInput,
   FacturaCompraListParams,
   FacturaListParams,
+  LoginInput,
   MovimientoInventarioListParams,
   ProductoCreateInput,
   ProductoListParams,
@@ -33,6 +40,8 @@ import type {
   ReporteComprasParams,
   ReporteExportInput,
   ReporteVentasParams,
+  UsuarioCreateInput,
+  UsuarioUpdateInput,
   VentaCreateInput,
   VentaListParams
 } from '@shared/types/requests'
@@ -100,12 +109,31 @@ const api = {
   configuracion: {
     get: () => invoke<ConfiguracionDTO>(IPC.configuracion.get),
     update: (input: ConfiguracionUpdateInput) => invoke<ConfiguracionDTO>(IPC.configuracion.update, input),
-    seleccionarLogo: () => invoke<ConfiguracionDTO | null>(IPC.configuracion.seleccionarLogo)
+    seleccionarLogo: () => invoke<ConfiguracionDTO | null>(IPC.configuracion.seleccionarLogo),
+    setImpresora: (nombre: string) => invoke<ConfiguracionDTO>(IPC.configuracion.setImpresora, nombre)
   },
   sistema: {
     backupNow: () => invoke<BackupInfo>(IPC.sistema.backupNow),
     listBackups: () => invoke<BackupInfo[]>(IPC.sistema.listBackups),
-    restoreBackup: (fileName: string) => invoke<boolean>(IPC.sistema.restoreBackup, fileName)
+    restoreBackup: (fileName: string) => invoke<boolean>(IPC.sistema.restoreBackup, fileName),
+    listarImpresoras: () => invoke<ImpresoraDTO[]>(IPC.sistema.listarImpresoras)
+  },
+  auth: {
+    login: (input: LoginInput) => invoke<UsuarioDTO>(IPC.auth.login, input),
+    logout: () => invoke<boolean>(IPC.auth.logout),
+    me: () => invoke<UsuarioDTO | null>(IPC.auth.me),
+    cambiarPassword: (input: CambiarPasswordInput) => invoke<void>(IPC.auth.cambiarPassword, input)
+  },
+  usuarios: {
+    list: () => invoke<UsuarioDTO[]>(IPC.usuarios.list),
+    roles: () => invoke<RolDTO[]>(IPC.usuarios.roles),
+    create: (input: UsuarioCreateInput) => invoke<UsuarioDTO>(IPC.usuarios.create, input),
+    update: (id: number, input: UsuarioUpdateInput) => invoke<UsuarioDTO>(IPC.usuarios.update, id, input),
+    remove: (id: number) => invoke<void>(IPC.usuarios.remove, id)
+  },
+  auditoria: {
+    list: (params?: AuditoriaListParams) => invoke<PaginatedResult<AuditoriaDTO>>(IPC.auditoria.list, params),
+    entidades: () => invoke<string[]>(IPC.auditoria.entidades)
   }
 }
 

@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import type { ProductoCreateInput, ProductoListParams, ProductoUpdateInput } from '@shared/types/requests'
+import { registrarAuditoria } from '../auditoria/audit-logger'
 
 export class ProductosRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -70,7 +71,7 @@ export class ProductosRepository {
 
   async create(input: ProductoCreateInput) {
     const categoriaId = await this.resolveCategoriaId(input.categoriaId, input.categoriaNombre)
-    return this.prisma.producto.create({
+    const producto = await this.prisma.producto.create({
       data: {
         codigo: input.codigo,
         nombre: input.nombre,
@@ -84,6 +85,8 @@ export class ProductosRepository {
       },
       include: { categoria: true }
     })
+    await registrarAuditoria(this.prisma, 'producto', producto.id, 'CREATE', { codigo: producto.codigo, nombre: producto.nombre })
+    return producto
   }
 
   async update(id: number, input: ProductoUpdateInput) {
@@ -92,7 +95,7 @@ export class ProductosRepository {
         ? await this.resolveCategoriaId(input.categoriaId, input.categoriaNombre)
         : undefined
 
-    return this.prisma.producto.update({
+    const producto = await this.prisma.producto.update({
       where: { id },
       data: {
         codigo: input.codigo,
@@ -108,16 +111,22 @@ export class ProductosRepository {
       },
       include: { categoria: true }
     })
+    await registrarAuditoria(this.prisma, 'producto', producto.id, 'UPDATE', { nombre: producto.nombre })
+    return producto
   }
 
   async remove(id: number) {
     const ventasCount = await this.prisma.detalleVenta.count({ where: { productoId: id } })
     if (ventasCount > 0) {
-      return this.prisma.producto.update({
+      const producto = await this.prisma.producto.update({
         where: { id },
         data: { activo: false }
       })
+      await registrarAuditoria(this.prisma, 'producto', id, 'UPDATE', { accion: 'desactivado' })
+      return producto
     }
-    return this.prisma.producto.delete({ where: { id } })
+    const producto = await this.prisma.producto.delete({ where: { id } })
+    await registrarAuditoria(this.prisma, 'producto', id, 'DELETE', { nombre: producto.nombre })
+    return producto
   }
 }

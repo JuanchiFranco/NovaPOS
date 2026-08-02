@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { getPrismaClient, disconnectPrisma } from './database/client'
 import { startAutoBackup, stopAutoBackup, createBackup } from './database/backup.service'
+import { ensureAuthSeed } from './database/seed'
 import { registerAllIpcHandlers } from './ipc/register-ipc'
 import { logger } from './shared/logger'
 
@@ -38,7 +39,7 @@ function createMainWindow(): void {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.juanfranco.novapos')
 
   app.on('browser-window-created', (_, window) => {
@@ -47,6 +48,7 @@ app.whenReady().then(() => {
 
   try {
     const prisma = getPrismaClient()
+    await ensureAuthSeed(prisma)
     registerAllIpcHandlers(prisma)
 
     // Backup de seguridad al iniciar (además del automático periódico).

@@ -219,10 +219,44 @@ export interface ReporteComprasDTO {
 
 export type ReporteFormato = 'csv' | 'xlsx' | 'pdf'
 
+export interface RolDTO {
+  id: number
+  nombre: string
+  descripcion: string | null
+}
+
+export interface UsuarioDTO {
+  id: number
+  nombre: string
+  usuario: string
+  activo: boolean
+  rolId: number
+  rolNombre: string
+  esAdministrador: boolean
+  createdAt: string
+}
+
+export interface AuditoriaDTO {
+  id: number
+  entidad: string
+  entidadId: number
+  accion: string
+  detalle: string | null
+  usuarioId: number | null
+  usuarioNombre: string | null
+  createdAt: string
+}
+
 export interface BackupInfo {
   fileName: string
   createdAt: string
   sizeBytes: number
+}
+
+export interface ImpresoraDTO {
+  nombre: string
+  descripcion: string
+  predeterminadaDelSistema: boolean
 }
 
 export interface PaginatedResult<T> {

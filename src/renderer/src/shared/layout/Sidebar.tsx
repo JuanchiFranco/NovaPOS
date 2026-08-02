@@ -8,20 +8,23 @@ import {
   FileText,
   Settings,
   Boxes,
-  BarChart3
+  BarChart3,
+  ShieldCheck
 } from 'lucide-react'
 import { useConfiguracion } from '../../modules/configuracion/hooks/useConfiguracion'
+import { useSessionStore } from '../store/session.store'
 
 const links = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/ventas', label: 'Ventas', icon: ShoppingCart },
-  { to: '/facturas', label: 'Facturas', icon: FileText },
-  { to: '/productos', label: 'Productos', icon: Package },
-  { to: '/clientes', label: 'Clientes', icon: Users },
-  { to: '/inventario', label: 'Inventario', icon: Boxes },
-  { to: '/compras', label: 'Compras', icon: ShoppingBag },
-  { to: '/reportes', label: 'Reportes', icon: BarChart3 },
-  { to: '/configuracion', label: 'Configuración', icon: Settings }
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true, soloAdmin: false },
+  { to: '/ventas', label: 'Ventas', icon: ShoppingCart, soloAdmin: false },
+  { to: '/facturas', label: 'Facturas', icon: FileText, soloAdmin: false },
+  { to: '/productos', label: 'Productos', icon: Package, soloAdmin: false },
+  { to: '/clientes', label: 'Clientes', icon: Users, soloAdmin: false },
+  { to: '/inventario', label: 'Inventario', icon: Boxes, soloAdmin: false },
+  { to: '/compras', label: 'Compras', icon: ShoppingBag, soloAdmin: false },
+  { to: '/reportes', label: 'Reportes', icon: BarChart3, soloAdmin: false },
+  { to: '/auditoria', label: 'Auditoría', icon: ShieldCheck, soloAdmin: true },
+  { to: '/configuracion', label: 'Configuración', icon: Settings, soloAdmin: false }
 ]
 
 function iniciales(nombre: string): string {
@@ -32,7 +35,9 @@ function iniciales(nombre: string): string {
 
 export function Sidebar(): JSX.Element {
   const { data: config } = useConfiguracion()
+  const usuario = useSessionStore((s) => s.usuario)
   const nombreComercial = config?.nombreComercial ?? 'NovaPOS'
+  const visibleLinks = links.filter((link) => !link.soloAdmin || usuario?.esAdministrador)
 
   return (
     <aside className="flex h-full w-60 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -47,7 +52,7 @@ export function Sidebar(): JSX.Element {
         <span className="truncate font-semibold text-slate-900 dark:text-slate-100">{nombreComercial}</span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-2">
-        {links.map(({ to, label, icon: Icon, end }) => (
+        {visibleLinks.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}

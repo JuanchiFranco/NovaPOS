@@ -17,4 +17,5 @@ export function registerConfiguracionIpc(service: ConfiguracionService): void {
     const logoPath = result.filePaths[0]
     return service.updateLogoPath(logoPath)
   })
+  handle(IPC.configuracion.setImpresora, (nombre: string) => service.setImpresora(nombre))
 }

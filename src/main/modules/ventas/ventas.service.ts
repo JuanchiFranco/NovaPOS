@@ -2,6 +2,7 @@ import type { EstadoVenta, MetodoPago, PaginatedResult, VentaDTO } from '@shared
 import type { VentaCreateInput, VentaListParams } from '@shared/types/requests'
 import { ventaSchema } from '@shared/schemas/venta.schema'
 import { NotFoundError, ValidationError } from '../../shared/errors'
+import { getSessionUserId } from '../auth/session'
 import type { VentasRepository, VentaConDetalle } from './ventas.repository'
 
 function toDTO(venta: VentaConDetalle): VentaDTO {
@@ -81,7 +82,7 @@ export class VentasService {
 
     const venta = await this.repo.createVentaConFactura({
       clienteId: parsed.clienteId ?? null,
-      usuarioId: null,
+      usuarioId: getSessionUserId(),
       subtotal: Number(subtotalBruto.toFixed(2)),
       descuento: Number(descuentoTotal.toFixed(2)),
       iva,
