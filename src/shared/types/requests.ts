@@ -1,4 +1,11 @@
-import type { MetodoPago, MetodoPagoCompra, TipoMovimiento } from './dto'
+import type {
+  MetodoPago,
+  MetodoPagoCompra,
+  ReporteAgrupacion,
+  ReporteComprasAgrupacion,
+  ReporteFormato,
+  TipoMovimiento
+} from './dto'
 
 export interface ClienteListParams {
   search?: string
@@ -127,4 +134,26 @@ export interface FacturaCompraListParams {
   hasta?: string
   page?: number
   pageSize?: number
+}
+
+export interface ReporteVentasParams {
+  desde?: string
+  hasta?: string
+  agrupacion: ReporteAgrupacion
+  clienteId?: number
+  productoId?: number
+  categoriaId?: number
+  metodoPago?: MetodoPago
+}
+
+export interface ReporteComprasParams {
+  desde?: string
+  hasta?: string
+  agrupacion: ReporteComprasAgrupacion
+  proveedorNombre?: string
+}
+
+export interface ReporteExportInput<T> {
+  params: T
+  formato: ReporteFormato
 }

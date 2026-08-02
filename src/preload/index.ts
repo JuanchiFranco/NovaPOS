@@ -13,6 +13,8 @@ import type {
   MovimientoInventarioDTO,
   PaginatedResult,
   ProductoDTO,
+  ReporteComprasDTO,
+  ReporteVentasDTO,
   VentaDTO
 } from '@shared/types/dto'
 import type {
@@ -28,6 +30,9 @@ import type {
   ProductoCreateInput,
   ProductoListParams,
   ProductoUpdateInput,
+  ReporteComprasParams,
+  ReporteExportInput,
+  ReporteVentasParams,
   VentaCreateInput,
   VentaListParams
 } from '@shared/types/requests'
@@ -77,6 +82,14 @@ const api = {
     movimientos: (params?: MovimientoInventarioListParams) =>
       invoke<PaginatedResult<MovimientoInventarioDTO>>(IPC.inventario.movimientos, params),
     ajustar: (input: AjusteInventarioInput) => invoke<MovimientoInventarioDTO>(IPC.inventario.ajustar, input)
+  },
+  reportes: {
+    ventas: (params: ReporteVentasParams) => invoke<ReporteVentasDTO>(IPC.reportes.ventas, params),
+    compras: (params: ReporteComprasParams) => invoke<ReporteComprasDTO>(IPC.reportes.compras, params),
+    exportarVentas: (input: ReporteExportInput<ReporteVentasParams>) =>
+      invoke<string | null>(IPC.reportes.exportarVentas, input),
+    exportarCompras: (input: ReporteExportInput<ReporteComprasParams>) =>
+      invoke<string | null>(IPC.reportes.exportarCompras, input)
   },
   compras: {
     list: (params?: FacturaCompraListParams) => invoke<PaginatedResult<FacturaCompraDTO>>(IPC.compras.list, params),

@@ -51,6 +51,12 @@ export const IPC = {
     update: 'configuracion:update',
     seleccionarLogo: 'configuracion:seleccionarLogo'
   },
+  reportes: {
+    ventas: 'reportes:ventas',
+    compras: 'reportes:compras',
+    exportarVentas: 'reportes:exportarVentas',
+    exportarCompras: 'reportes:exportarCompras'
+  },
   sistema: {
     backupNow: 'sistema:backupNow',
     restoreBackup: 'sistema:restoreBackup',

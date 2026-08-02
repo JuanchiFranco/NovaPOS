@@ -7,7 +7,8 @@ import {
   ShoppingBag,
   FileText,
   Settings,
-  Boxes
+  Boxes,
+  BarChart3
 } from 'lucide-react'
 import { useConfiguracion } from '../../modules/configuracion/hooks/useConfiguracion'
 
@@ -19,6 +20,7 @@ const links = [
   { to: '/clientes', label: 'Clientes', icon: Users },
   { to: '/inventario', label: 'Inventario', icon: Boxes },
   { to: '/compras', label: 'Compras', icon: ShoppingBag },
+  { to: '/reportes', label: 'Reportes', icon: BarChart3 },
   { to: '/configuracion', label: 'Configuración', icon: Settings }
 ]
 

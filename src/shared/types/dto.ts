@@ -171,6 +171,54 @@ export interface DashboardResumenDTO {
   ultimasCompras: FacturaCompraDTO[]
 }
 
+export type ReporteAgrupacion = 'dia' | 'semana' | 'mes' | 'anio' | 'cliente' | 'producto' | 'categoria' | 'metodoPago'
+
+export interface ReporteVentasFilaDTO {
+  clave: string
+  etiqueta: string
+  cantidadVentas: number
+  unidadesVendidas: number
+  subtotal: number
+  descuento: number
+  total: number
+}
+
+export interface ReporteVentasDTO {
+  agrupacion: ReporteAgrupacion
+  desde: string | null
+  hasta: string | null
+  filas: ReporteVentasFilaDTO[]
+  totales: {
+    cantidadVentas: number
+    unidadesVendidas: number
+    subtotal: number
+    descuento: number
+    total: number
+  }
+}
+
+export type ReporteComprasAgrupacion = 'dia' | 'semana' | 'mes' | 'anio' | 'proveedor'
+
+export interface ReporteComprasFilaDTO {
+  clave: string
+  etiqueta: string
+  cantidadCompras: number
+  total: number
+}
+
+export interface ReporteComprasDTO {
+  agrupacion: ReporteComprasAgrupacion
+  desde: string | null
+  hasta: string | null
+  filas: ReporteComprasFilaDTO[]
+  totales: {
+    cantidadCompras: number
+    total: number
+  }
+}
+
+export type ReporteFormato = 'csv' | 'xlsx' | 'pdf'
+
 export interface BackupInfo {
   fileName: string
   createdAt: string
