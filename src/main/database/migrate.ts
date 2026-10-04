@@ -50,15 +50,9 @@ function addMissingColumns(db: Database.Database): void {
 
     if (!columnNames.has('eslogan')) {
       db.exec('ALTER TABLE "configuracion" ADD COLUMN "eslogan" TEXT')
-      db.prepare('UPDATE "configuracion" SET "eslogan" = ? WHERE "id" = 1 AND "eslogan" IS NULL').run(
-        'VENTA DE: VELAS, VELADORAS Y MUCHO MAS'
-      )
     }
     if (!columnNames.has('mensajePie')) {
       db.exec('ALTER TABLE "configuracion" ADD COLUMN "mensajePie" TEXT')
-      db.prepare('UPDATE "configuracion" SET "mensajePie" = ? WHERE "id" = 1 AND "mensajePie" IS NULL').run(
-        'HACERCATE PARA TENER EL GUSTO DE ATENDERTE\n\nTODO LO PUEDO EN CRISTO QUE ME FORTALECE'
-      )
     }
   }
 

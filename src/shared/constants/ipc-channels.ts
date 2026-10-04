@@ -76,6 +76,12 @@ export const IPC = {
     remove: 'usuarios:remove',
     roles: 'usuarios:roles'
   },
+  roles: {
+    list: 'roles:list',
+    create: 'roles:create',
+    update: 'roles:update',
+    remove: 'roles:remove'
+  },
   auditoria: {
     list: 'auditoria:list',
     entidades: 'auditoria:entidades'

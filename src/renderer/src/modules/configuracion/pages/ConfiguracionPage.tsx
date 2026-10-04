@@ -13,14 +13,19 @@ import { ErrorState } from '../../../shared/components/ErrorState'
 import { useConfiguracion, useSeleccionarLogo, useUpdateConfiguracion } from '../hooks/useConfiguracion'
 import { useSessionStore } from '../../../shared/store/session.store'
 import { CambiarPasswordCard } from '../../auth/components/CambiarPasswordCard'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { UsuariosTab } from '../../usuarios/components/UsuariosTab'
+import { RolesTab } from '../../roles/components/RolesTab'
 import { SistemaTab } from '../components/SistemaTab'
 
-type Tab = 'general' | 'usuarios' | 'sistema'
+type Tab = 'general' | 'usuarios' | 'roles' | 'sistema'
 
 export default function ConfiguracionPage(): JSX.Element {
   const usuario = useSessionStore((s) => s.usuario)
   const esAdmin = usuario?.esAdministrador ?? false
+  const puedeEditarConfig = usePermiso('configuracion.editar')
+  const puedeUsuarios = usePermiso('usuarios.gestionar')
+  const puedeBackups = usePermiso('sistema.backups')
   const [tab, setTab] = useState<Tab>('general')
 
   const { data: config, isLoading, isError, error, refetch } = useConfiguracion()
@@ -83,7 +88,7 @@ export default function ConfiguracionPage(): JSX.Element {
         >
           General
         </button>
-        {esAdmin && (
+        {puedeUsuarios && (
           <button
             onClick={() => setTab('usuarios')}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
@@ -95,6 +100,16 @@ export default function ConfiguracionPage(): JSX.Element {
         )}
         {esAdmin && (
           <button
+            onClick={() => setTab('roles')}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              tab === 'roles' ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'
+            }`}
+          >
+            Roles
+          </button>
+        )}
+        {puedeBackups && (
+          <button
             onClick={() => setTab('sistema')}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
               tab === 'sistema' ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'
@@ -105,7 +120,13 @@ export default function ConfiguracionPage(): JSX.Element {
         )}
       </div>
 
-      {tab === 'general' && (
+      {tab === 'general' && !puedeEditarConfig && (
+        <div className="max-w-md">
+          <CambiarPasswordCard />
+        </div>
+      )}
+
+      {tab === 'general' && puedeEditarConfig && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-2">
           <Card className="space-y-4">
@@ -123,7 +144,7 @@ export default function ConfiguracionPage(): JSX.Element {
               />
               <Input
                 label="Eslogan"
-                hint="Aparece debajo del nombre en la factura. Ej: VENTA DE: VELAS, VELADORAS Y MUCHO MAS"
+                hint="Aparece debajo del nombre en la factura. Ej: Venta de papelería y útiles escolares"
                 className="sm:col-span-2"
                 error={errors.eslogan?.message}
                 {...register('eslogan')}
@@ -197,8 +218,9 @@ export default function ConfiguracionPage(): JSX.Element {
         </div>
       )}
 
-      {tab === 'usuarios' && esAdmin && <UsuariosTab />}
-      {tab === 'sistema' && esAdmin && <SistemaTab />}
+      {tab === 'usuarios' && puedeUsuarios && <UsuariosTab />}
+      {tab === 'roles' && esAdmin && <RolesTab />}
+      {tab === 'sistema' && puedeBackups && <SistemaTab />}
     </div>
   )
 }

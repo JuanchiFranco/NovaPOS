@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Pencil, Plus, Trash2, UserX } from 'lucide-react'
 import type { ClienteDTO } from '@shared/types/dto'
 import type { ClienteFormValues } from '@shared/schemas/cliente.schema'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
 import { SearchInput } from '../../../shared/components/SearchInput'
@@ -22,6 +23,8 @@ export default function ClientesPage(): JSX.Element {
   const [page, setPage] = useState(1)
   const debouncedSearch = useDebounce(search, 300)
 
+  const puedeEditar = usePermiso('clientes.editar')
+  const puedeEliminar = usePermiso('clientes.eliminar')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<ClienteDTO | null>(null)
   const [toDelete, setToDelete] = useState<ClienteDTO | null>(null)
@@ -68,20 +71,24 @@ export default function ClientesPage(): JSX.Element {
       className: 'text-right',
       render: (c) => (
         <div className="flex justify-end gap-1">
-          <button
-            onClick={() => openEdit(c)}
-            className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-            title="Editar"
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setToDelete(c)}
-            className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
-            title="Eliminar"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {puedeEditar && (
+            <button
+              onClick={() => openEdit(c)}
+              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              title="Editar"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
+          {puedeEliminar && (
+            <button
+              onClick={() => setToDelete(c)}
+              className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+              title="Eliminar"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       )
     }
@@ -92,11 +99,11 @@ export default function ClientesPage(): JSX.Element {
       <PageHeader
         title="Clientes"
         description="Gestiona la información de tus clientes."
-        actions={
+        actions={puedeEditar ? (
           <Button onClick={openCreate}>
             <Plus className="h-4 w-4" /> Nuevo cliente
           </Button>
-        }
+        ) : undefined}
       />
 
       <Card>

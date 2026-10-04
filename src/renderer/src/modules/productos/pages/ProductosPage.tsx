@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { AlertTriangle, Package, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { ProductoDTO } from '@shared/types/dto'
 import type { ProductoFormValues } from '@shared/schemas/producto.schema'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
 import { SearchInput } from '../../../shared/components/SearchInput'
@@ -30,6 +31,8 @@ export default function ProductosPage(): JSX.Element {
   const [soloBajoStock, setSoloBajoStock] = useState(false)
   const debouncedSearch = useDebounce(search, 300)
 
+  const puedeEditar = usePermiso('productos.editar')
+  const puedeEliminar = usePermiso('productos.eliminar')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<ProductoDTO | null>(null)
   const [toDelete, setToDelete] = useState<ProductoDTO | null>(null)
@@ -92,20 +95,24 @@ export default function ProductosPage(): JSX.Element {
       className: 'text-right',
       render: (p) => (
         <div className="flex justify-end gap-1">
-          <button
-            onClick={() => openEdit(p)}
-            className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-            title="Editar"
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setToDelete(p)}
-            className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
-            title="Eliminar"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {puedeEditar && (
+            <button
+              onClick={() => openEdit(p)}
+              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              title="Editar"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
+          {puedeEliminar && (
+            <button
+              onClick={() => setToDelete(p)}
+              className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+              title="Eliminar"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       )
     }
@@ -116,11 +123,11 @@ export default function ProductosPage(): JSX.Element {
       <PageHeader
         title="Productos"
         description="Controla tu catálogo, precios e inventario."
-        actions={
+        actions={puedeEditar ? (
           <Button onClick={openCreate}>
             <Plus className="h-4 w-4" /> Nuevo producto
           </Button>
-        }
+        ) : undefined}
       />
 
       <Card>

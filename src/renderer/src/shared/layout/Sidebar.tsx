@@ -12,19 +12,21 @@ import {
   ShieldCheck
 } from 'lucide-react'
 import { useConfiguracion } from '../../modules/configuracion/hooks/useConfiguracion'
+import type { Permiso } from '@shared/constants/permisos'
+import { tienePermiso } from '@shared/constants/permisos'
 import { useSessionStore } from '../store/session.store'
 
-const links = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true, soloAdmin: false },
-  { to: '/ventas', label: 'Ventas', icon: ShoppingCart, soloAdmin: false },
-  { to: '/facturas', label: 'Facturas', icon: FileText, soloAdmin: false },
-  { to: '/productos', label: 'Productos', icon: Package, soloAdmin: false },
-  { to: '/clientes', label: 'Clientes', icon: Users, soloAdmin: false },
-  { to: '/inventario', label: 'Inventario', icon: Boxes, soloAdmin: false },
-  { to: '/compras', label: 'Compras', icon: ShoppingBag, soloAdmin: false },
-  { to: '/reportes', label: 'Reportes', icon: BarChart3, soloAdmin: false },
-  { to: '/auditoria', label: 'Auditoría', icon: ShieldCheck, soloAdmin: true },
-  { to: '/configuracion', label: 'Configuración', icon: Settings, soloAdmin: false }
+const links: { to: string; label: string; icon: typeof Users; end?: boolean; permiso?: Permiso | Permiso[] }[] = [
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true, permiso: 'dashboard.ver' },
+  { to: '/ventas', label: 'Ventas', icon: ShoppingCart, permiso: 'ventas.crear' },
+  { to: '/facturas', label: 'Facturas', icon: FileText, permiso: 'facturas.ver' },
+  { to: '/productos', label: 'Productos', icon: Package },
+  { to: '/clientes', label: 'Clientes', icon: Users },
+  { to: '/inventario', label: 'Inventario', icon: Boxes, permiso: 'inventario.ver' },
+  { to: '/compras', label: 'Compras', icon: ShoppingBag, permiso: 'compras.ver' },
+  { to: '/reportes', label: 'Reportes', icon: BarChart3, permiso: 'reportes.ver' },
+  { to: '/auditoria', label: 'Auditoría', icon: ShieldCheck, permiso: 'auditoria.ver' },
+  { to: '/configuracion', label: 'Configuración', icon: Settings }
 ]
 
 function iniciales(nombre: string): string {
@@ -37,7 +39,7 @@ export function Sidebar(): JSX.Element {
   const { data: config } = useConfiguracion()
   const usuario = useSessionStore((s) => s.usuario)
   const nombreComercial = config?.nombreComercial ?? 'NovaPOS'
-  const visibleLinks = links.filter((link) => !link.soloAdmin || usuario?.esAdministrador)
+  const visibleLinks = links.filter((link) => !link.permiso || tienePermiso(usuario?.permisos, link.permiso))
 
   return (
     <aside className="flex h-full w-60 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -71,7 +73,7 @@ export function Sidebar(): JSX.Element {
         ))}
       </nav>
       <div className="border-t border-slate-200 p-4 text-xs text-slate-400 dark:border-slate-800">
-        v1.1.0 · Funciona sin conexión
+        v{__APP_VERSION__} · Funciona sin conexión
       </div>
     </aside>
   )

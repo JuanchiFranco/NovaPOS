@@ -6,6 +6,7 @@ import type { CategoriaDTO, ProductoDTO } from '@shared/types/dto'
 import { Input } from '../../../shared/components/Input'
 import { TextArea } from '../../../shared/components/TextArea'
 import { Button } from '../../../shared/components/Button'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 
 interface ProductoFormProps {
   initialData?: ProductoDTO | null
@@ -16,6 +17,10 @@ interface ProductoFormProps {
 }
 
 export function ProductoForm({ initialData, categorias, loading, onSubmit, onCancel }: ProductoFormProps): JSX.Element {
+  // Al editar, solo quien tenga el permiso "productos.precios" cambia precios y stock (el backend también lo exige).
+  const puedeCambiarPrecios = usePermiso('productos.precios')
+  const bloqueado = Boolean(initialData) && !puedeCambiarPrecios
+  const aviso = bloqueado ? 'No tienes permiso para modificar este campo' : undefined
   const {
     register,
     handleSubmit,
@@ -80,6 +85,8 @@ export function ProductoForm({ initialData, categorias, loading, onSubmit, onCan
           label="Precio de compra *"
           type="number"
           step="0.01"
+          readOnly={bloqueado}
+          hint={aviso}
           error={errors.precioCompra?.message}
           {...register('precioCompra')}
         />
@@ -87,6 +94,8 @@ export function ProductoForm({ initialData, categorias, loading, onSubmit, onCan
           label="Precio al detal *"
           type="number"
           step="0.01"
+          readOnly={bloqueado}
+          hint={aviso}
           error={errors.precioVenta?.message}
           {...register('precioVenta')}
         />
@@ -94,14 +103,15 @@ export function ProductoForm({ initialData, categorias, loading, onSubmit, onCan
           label="Precio al por mayor"
           type="number"
           step="0.01"
-          hint="Déjalo vacío si no manejas precio mayorista para este producto"
+          readOnly={bloqueado}
+          hint={aviso ?? 'Déjalo vacío si no manejas precio mayorista para este producto'}
           error={errors.precioMayorista?.message}
           {...register('precioMayorista')}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Input label="Stock actual *" type="number" error={errors.stock?.message} {...register('stock')} />
+        <Input label="Stock actual *" type="number" readOnly={bloqueado} hint={bloqueado ? 'Ajústalo desde Inventario' : undefined} error={errors.stock?.message} {...register('stock')} />
         <Input
           label="Stock mínimo *"
           type="number"

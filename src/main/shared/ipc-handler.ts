@@ -3,6 +3,7 @@ import { ZodError } from 'zod'
 import type { ApiResult } from '@shared/types/dto'
 import { logger } from './logger'
 import { AppError, toUserMessage } from './errors'
+import { tienePermiso, type Permiso } from '@shared/constants/permisos'
 import { getSessionUser, sessionDebeCambiarPassword } from '../modules/auth/session'
 
 /**
@@ -10,11 +11,13 @@ import { getSessionUser, sessionDebeCambiarPassword } from '../modules/auth/sess
  * no solo ocultando botones en la interfaz:
  *  - 'public': no requiere sesión (login, datos de marca para la pantalla de login).
  *  - 'auth'  : requiere sesión iniciada (valor por defecto).
- *  - 'admin' : requiere sesión de un usuario con rol Administrador.
+ *  - 'admin' : requiere sesión de un usuario con rol Administrador (p. ej. gestionar roles).
+ *  - Permiso (o lista de permisos, basta con uno): requiere que el rol del usuario lo conceda
+ *    (ver shared/constants/permisos.ts). El rol Administrador tiene todos.
  *  - 'session-setup': requiere sesión, y se permite incluso cuando está pendiente
  *    el cambio obligatorio de contraseña (logout, me, cambiar contraseña).
  */
-export type IpcAccess = 'public' | 'auth' | 'admin' | 'session-setup'
+export type IpcAccess = 'public' | 'auth' | 'admin' | 'session-setup' | Permiso | readonly Permiso[]
 
 function checkAccess(channel: string, access: IpcAccess): void {
   if (access === 'public') return
@@ -26,7 +29,10 @@ function checkAccess(channel: string, access: IpcAccess): void {
     throw new AppError('Debes cambiar tu contraseña inicial antes de continuar.')
   }
 
-  if (access === 'admin' && !user.esAdministrador) {
+  if (access === 'auth' || access === 'session-setup') return
+
+  const permitido = access === 'admin' ? user.esAdministrador : tienePermiso(user.permisos, access)
+  if (!permitido) {
     logger.warn(`Acceso denegado al canal ${channel}`, { usuario: user.usuario })
     throw new AppError('No tienes permisos para realizar esta acción.')
   }

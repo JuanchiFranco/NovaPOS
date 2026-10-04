@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { AlertTriangle, ArrowDownCircle, ArrowUpCircle, Boxes, Plus, Settings2 } from 'lucide-react'
 import type { MovimientoInventarioDTO, TipoMovimiento } from '@shared/types/dto'
 import type { MovimientoInventarioFormValues } from '@shared/schemas/inventario.schema'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
 import { Button } from '../../../shared/components/Button'
@@ -38,6 +39,7 @@ const tipoIcon: Record<TipoMovimiento, JSX.Element> = {
 export default function InventarioPage(): JSX.Element {
   const [tipo, setTipo] = useState<TipoMovimiento | ''>('')
   const [page, setPage] = useState(1)
+  const puedeAjustar = usePermiso('inventario.ajustar')
   const [modalOpen, setModalOpen] = useState(false)
 
   const { data: productosBajoStock = [] } = useProductosBajoStock()
@@ -93,11 +95,11 @@ export default function InventarioPage(): JSX.Element {
       <PageHeader
         title="Inventario"
         description="Historial de movimientos de stock: entradas, salidas y ajustes manuales."
-        actions={
+        actions={puedeAjustar ? (
           <Button onClick={() => setModalOpen(true)}>
             <Plus className="h-4 w-4" /> Registrar movimiento
           </Button>
-        }
+        ) : undefined}
       />
 
       {productosBajoStock.length > 0 && (

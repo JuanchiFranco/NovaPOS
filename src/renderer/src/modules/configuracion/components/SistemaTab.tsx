@@ -7,6 +7,7 @@ import { Table, type Column } from '../../../shared/components/Table'
 import { Badge } from '../../../shared/components/Badge'
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog'
 import { formatDateTime } from '../../../shared/lib/format'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { useConfiguracion } from '../hooks/useConfiguracion'
 import { useBackups, useCrearBackup, useImpresoras, useRestaurarBackup, useSetImpresora } from '../hooks/useSistema'
 
@@ -17,13 +18,64 @@ function formatBytes(bytes: number): string {
   return `${(kb / 1024).toFixed(1)} MB`
 }
 
-export function SistemaTab(): JSX.Element {
-  const { data: backups = [], isLoading: cargandoBackups } = useBackups()
+/** Elegir la impresora predeterminada requiere el permiso de editar la configuración del negocio. */
+function ImpresoraCard(): JSX.Element {
   const { data: impresoras = [], isLoading: cargandoImpresoras } = useImpresoras()
   const { data: config } = useConfiguracion()
+  const setImpresora = useSetImpresora()
+
+  return (
+    <Card>
+      <h2 className="mb-1 flex items-center gap-2 font-medium text-slate-800 dark:text-slate-200">
+        <Printer className="h-4 w-4" /> Impresora predeterminada
+      </h2>
+      <p className="mb-4 text-sm text-slate-400">Se usará al imprimir facturas directamente sin mostrar el diálogo del sistema.</p>
+
+      {cargandoImpresoras ? (
+        <p className="text-sm text-slate-400">Buscando impresoras…</p>
+      ) : impresoras.length === 0 ? (
+        <p className="text-sm text-slate-400">No se detectaron impresoras conectadas.</p>
+      ) : (
+        <div className="space-y-2">
+          {impresoras.map((imp) => {
+            const esActual = config?.impresoraPredeterminada === imp.nombre
+            return (
+              <div
+                key={imp.nombre}
+                className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3 dark:border-slate-700"
+              >
+                <div>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{imp.descripcion}</p>
+                  {imp.predeterminadaDelSistema && <p className="text-xs text-slate-400">Predeterminada del sistema operativo</p>}
+                </div>
+                {esActual ? (
+                  <Badge tone="green">
+                    <CheckCircle2 className="mr-1 inline h-3 w-3" /> En uso
+                  </Badge>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    loading={setImpresora.isPending}
+                    onClick={() => setImpresora.mutate(imp.nombre)}
+                  >
+                    Usar esta
+                  </Button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+export function SistemaTab(): JSX.Element {
+  const { data: backups = [], isLoading: cargandoBackups } = useBackups()
   const crearBackup = useCrearBackup()
   const restaurarBackup = useRestaurarBackup()
-  const setImpresora = useSetImpresora()
+  const puedeConfigurar = usePermiso('configuracion.editar')
   const [aRestaurar, setARestaurar] = useState<BackupInfo | null>(null)
 
   const columns: Column<BackupInfo>[] = [
@@ -69,49 +121,7 @@ export function SistemaTab(): JSX.Element {
         />
       </Card>
 
-      <Card>
-        <h2 className="mb-1 flex items-center gap-2 font-medium text-slate-800 dark:text-slate-200">
-          <Printer className="h-4 w-4" /> Impresora predeterminada
-        </h2>
-        <p className="mb-4 text-sm text-slate-400">Se usará al imprimir facturas directamente sin mostrar el diálogo del sistema.</p>
-
-        {cargandoImpresoras ? (
-          <p className="text-sm text-slate-400">Buscando impresoras…</p>
-        ) : impresoras.length === 0 ? (
-          <p className="text-sm text-slate-400">No se detectaron impresoras conectadas.</p>
-        ) : (
-          <div className="space-y-2">
-            {impresoras.map((imp) => {
-              const esActual = config?.impresoraPredeterminada === imp.nombre
-              return (
-                <div
-                  key={imp.nombre}
-                  className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3 dark:border-slate-700"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{imp.descripcion}</p>
-                    {imp.predeterminadaDelSistema && <p className="text-xs text-slate-400">Predeterminada del sistema operativo</p>}
-                  </div>
-                  {esActual ? (
-                    <Badge tone="green">
-                      <CheckCircle2 className="mr-1 inline h-3 w-3" /> En uso
-                    </Badge>
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      loading={setImpresora.isPending}
-                      onClick={() => setImpresora.mutate(imp.nombre)}
-                    >
-                      Usar esta
-                    </Button>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </Card>
+      {puedeConfigurar && <ImpresoraCard />}
 
       <ConfirmDialog
         open={Boolean(aRestaurar)}

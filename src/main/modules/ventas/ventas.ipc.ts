@@ -6,7 +6,7 @@ import type { VentaCreateInput, VentaListParams } from '@shared/types/requests'
 export function registerVentasIpc(service: VentasService): void {
   handle(IPC.ventas.list, (params: VentaListParams) => service.list(params ?? {}))
   handle(IPC.ventas.getById, (id: number) => service.getById(id))
-  handle(IPC.ventas.create, (input: VentaCreateInput) => service.create(input))
+  handle(IPC.ventas.create, (input: VentaCreateInput) => service.create(input), 'ventas.crear')
   // Las ventas/facturas no se eliminan (trazabilidad del consecutivo): solo se anulan, y solo un administrador.
-  handle(IPC.ventas.anular, (id: number) => service.anular(id), 'admin')
+  handle(IPC.ventas.anular, (id: number) => service.anular(id), 'ventas.anular')
 }

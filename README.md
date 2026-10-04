@@ -79,9 +79,12 @@ Cada módulo de negocio sigue **Repository Pattern + Service Layer**: el reposit
 - **Auditoría**: registro automático de creaciones, actualizaciones y eliminaciones en productos, clientes, ventas, compras, configuración y usuarios, con una pantalla de solo lectura (filtrable por entidad, acción, usuario y fecha) visible solo para administradores.
 - **Configuración → Sistema**: crear y restaurar backups manuales desde la interfaz, y elegir la impresora predeterminada para imprimir facturas sin mostrar el diálogo del sistema operativo.
 
+## Roles y permisos
+
+El Administrador crea roles a medida desde **Configuración → Roles** marcando qué puede hacer cada uno (registrar ventas, anular, cambiar precios, ver reportes, gestionar usuarios, etc. — ver `src/shared/constants/permisos.ts`) y los asigna al crear usuarios en **Configuración → Usuarios**. Los permisos se validan en el proceso main en cada operación (`src/main/shared/ipc-handler.ts`), no solo en la interfaz. El rol *Administrador* es del sistema: tiene todos los permisos y no se puede editar ni eliminar. Quien gestione usuarios sin ser Administrador no puede asignar el rol Administrador ni un rol con más permisos de los que él tiene. Los cambios de un rol aplican la próxima vez que sus usuarios inicien sesión.
+
 ### Pendiente / mejoras futuras
 
-- Editor de permisos por rol desde la interfaz (hoy los permisos de cada rol se definen en el backend; el rol solo controla el acceso a Configuración/Usuarios/Auditoría).
 - Gráficos en la pantalla de Reportes (hoy es tabular; el Dashboard sí incluye gráficos).
 
 ## Nota sobre la instalación de dependencias

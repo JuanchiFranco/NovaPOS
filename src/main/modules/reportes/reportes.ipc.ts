@@ -86,8 +86,8 @@ async function exportarArchivo(spec: ExportSpec): Promise<string | null> {
 }
 
 export function registerReportesIpc(service: ReportesService, configuracionService: ConfiguracionService): void {
-  handle(IPC.reportes.ventas, (params: ReporteVentasParams) => service.reporteVentas(params))
-  handle(IPC.reportes.compras, (params: ReporteComprasParams) => service.reporteCompras(params))
+  handle(IPC.reportes.ventas, (params: ReporteVentasParams) => service.reporteVentas(params), 'reportes.ver')
+  handle(IPC.reportes.compras, (params: ReporteComprasParams) => service.reporteCompras(params), 'reportes.ver')
 
   handle(IPC.reportes.exportarVentas, async ({ params, formato }: ReporteExportInput<ReporteVentasParams>) => {
     try {
@@ -146,7 +146,7 @@ export function registerReportesIpc(service: ReportesService, configuracionServi
       logger.error('Error exportando reporte de ventas', error)
       throw new AppError('No se pudo exportar el reporte de ventas.')
     }
-  })
+  }, 'reportes.ver')
 
   handle(IPC.reportes.exportarCompras, async ({ params, formato }: ReporteExportInput<ReporteComprasParams>) => {
     try {
@@ -177,5 +177,5 @@ export function registerReportesIpc(service: ReportesService, configuracionServi
       logger.error('Error exportando reporte de compras', error)
       throw new AppError('No se pudo exportar el reporte de compras.')
     }
-  })
+  }, 'reportes.ver')
 }

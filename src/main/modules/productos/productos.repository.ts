@@ -85,7 +85,14 @@ export class ProductosRepository {
       },
       include: { categoria: true }
     })
-    await registrarAuditoria(this.prisma, 'producto', producto.id, 'CREATE', { codigo: producto.codigo, nombre: producto.nombre })
+    await registrarAuditoria(this.prisma, 'producto', producto.id, 'CREATE', {
+      codigo: producto.codigo,
+      nombre: producto.nombre,
+      precioCompra: producto.precioCompra,
+      precioVenta: producto.precioVenta,
+      precioMayorista: producto.precioMayorista,
+      stock: producto.stock
+    })
     return producto
   }
 
@@ -94,6 +101,8 @@ export class ProductosRepository {
       input.categoriaId !== undefined || input.categoriaNombre !== undefined
         ? await this.resolveCategoriaId(input.categoriaId, input.categoriaNombre)
         : undefined
+
+    const antes = await this.prisma.producto.findUnique({ where: { id } })
 
     const producto = await this.prisma.producto.update({
       where: { id },
@@ -111,7 +120,15 @@ export class ProductosRepository {
       },
       include: { categoria: true }
     })
-    await registrarAuditoria(this.prisma, 'producto', producto.id, 'UPDATE', { nombre: producto.nombre })
+    // Se registra el valor anterior y el nuevo de cada campo sensible que cambió (precios, stock, estado).
+    const campos = ['codigo', 'nombre', 'precioCompra', 'precioVenta', 'precioMayorista', 'stock', 'stockMinimo', 'activo'] as const
+    const cambios: Record<string, { antes: unknown; despues: unknown }> = {}
+    if (antes) {
+      for (const campo of campos) {
+        if (antes[campo] !== producto[campo]) cambios[campo] = { antes: antes[campo], despues: producto[campo] }
+      }
+    }
+    await registrarAuditoria(this.prisma, 'producto', producto.id, 'UPDATE', { nombre: producto.nombre, cambios })
     return producto
   }
 

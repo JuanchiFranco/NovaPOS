@@ -5,12 +5,12 @@ import { createBackup, listBackups, restoreBackup } from '../../database/backup.
 import type { ImpresoraDTO } from '@shared/types/dto'
 
 export function registerSistemaIpc(): void {
-  handle(IPC.sistema.backupNow, () => createBackup(), 'admin')
-  handle(IPC.sistema.listBackups, () => listBackups(), 'admin')
+  handle(IPC.sistema.backupNow, () => createBackup(), 'sistema.backups')
+  handle(IPC.sistema.listBackups, () => listBackups(), 'sistema.backups')
   handle(IPC.sistema.restoreBackup, (fileName: string) => {
     restoreBackup(fileName)
     return true
-  }, 'admin')
+  }, 'sistema.backups')
 
   handle(IPC.sistema.listarImpresoras, async (): Promise<ImpresoraDTO[]> => {
     const win = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0]
@@ -21,5 +21,5 @@ export function registerSistemaIpc(): void {
       descripcion: p.displayName || p.name,
       predeterminadaDelSistema: p.isDefault
     }))
-  })
+  }, 'configuracion.editar')
 }

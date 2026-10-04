@@ -41,6 +41,8 @@ import type {
   ReporteExportInput,
   ReporteVentasParams,
   UsuarioCreateInput,
+  RolCreateInput,
+  RolUpdateInput,
   UsuarioUpdateInput,
   VentaCreateInput,
   VentaListParams
@@ -129,6 +131,12 @@ const api = {
     create: (input: UsuarioCreateInput) => invoke<UsuarioDTO>(IPC.usuarios.create, input),
     update: (id: number, input: UsuarioUpdateInput) => invoke<UsuarioDTO>(IPC.usuarios.update, id, input),
     remove: (id: number) => invoke<void>(IPC.usuarios.remove, id)
+  },
+  roles: {
+    list: () => invoke<RolDTO[]>(IPC.roles.list),
+    create: (input: RolCreateInput) => invoke<RolDTO>(IPC.roles.create, input),
+    update: (id: number, input: RolUpdateInput) => invoke<RolDTO>(IPC.roles.update, id, input),
+    remove: (id: number) => invoke<void>(IPC.roles.remove, id)
   },
   auditoria: {
     list: (params?: AuditoriaListParams) => invoke<PaginatedResult<AuditoriaDTO>>(IPC.auditoria.list, params),

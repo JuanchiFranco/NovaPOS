@@ -3,5 +3,5 @@ import { handle } from '../../shared/ipc-handler'
 import type { DashboardService } from './dashboard.service'
 
 export function registerDashboardIpc(service: DashboardService): void {
-  handle(IPC.dashboard.resumen, () => service.resumen())
+  handle(IPC.dashboard.resumen, () => service.resumen(), 'dashboard.ver')
 }

@@ -69,7 +69,7 @@ export class UsuariosRepository {
   }
 
   listRoles() {
-    return this.prisma.rol.findMany({ orderBy: { nombre: 'asc' } })
+    return this.prisma.rol.findMany({ orderBy: { nombre: 'asc' }, include: { _count: { select: { usuarios: true } } } })
   }
 
   countActivos(): Promise<number> {

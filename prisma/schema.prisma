@@ -62,7 +62,7 @@ model Auditoria {
 
 model Configuracion {
   id                 Int      @id @default(autoincrement())
-  nombreComercial    String   @default("VARIEDADES J&A")
+  nombreComercial    String   @default("Mi negocio")
   eslogan            String?
   mensajePie         String?
   nit                String?

@@ -10,9 +10,9 @@ import type { FacturaListParams } from '@shared/types/requests'
 import { createFacturaPrintWindow } from './print-window'
 
 export function registerFacturasIpc(service: FacturasService, configuracionService: ConfiguracionService): void {
-  handle(IPC.facturas.list, (params: FacturaListParams) => service.list(params ?? {}))
-  handle(IPC.facturas.getById, (id: number) => service.getById(id))
-  handle(IPC.facturas.getByVentaId, (ventaId: number) => service.getByVentaId(ventaId))
+  handle(IPC.facturas.list, (params: FacturaListParams) => service.list(params ?? {}), ['facturas.ver'])
+  handle(IPC.facturas.getById, (id: number) => service.getById(id), ['facturas.ver', 'ventas.crear'])
+  handle(IPC.facturas.getByVentaId, (ventaId: number) => service.getByVentaId(ventaId), ['facturas.ver', 'ventas.crear'])
 
   handle(IPC.facturas.exportPdf, async (id: number) => {
     const factura = await service.getById(id)
@@ -40,7 +40,7 @@ export function registerFacturasIpc(service: FacturasService, configuracionServi
     } finally {
       win?.destroy()
     }
-  })
+  }, ['facturas.ver', 'ventas.crear'])
 
   handle(IPC.facturas.print, async (id: number) => {
     let win: BrowserWindow | null = null
@@ -63,5 +63,5 @@ export function registerFacturasIpc(service: FacturasService, configuracionServi
     } finally {
       win?.destroy()
     }
-  })
+  }, ['facturas.ver', 'ventas.crear'])
 }

@@ -35,6 +35,9 @@ import { registerAuthIpc } from '../modules/auth/auth.ipc'
 import { AuditoriaRepository } from '../modules/auditoria/auditoria.repository'
 import { AuditoriaService } from '../modules/auditoria/auditoria.service'
 import { registerAuditoriaIpc } from '../modules/auditoria/auditoria.ipc'
+import { RolesRepository } from '../modules/roles/roles.repository'
+import { RolesService } from '../modules/roles/roles.service'
+import { registerRolesIpc } from '../modules/roles/roles.ipc'
 
 /**
  * Composition root: cablea repository -> service -> ipc para cada módulo.
@@ -71,6 +74,8 @@ export function registerAllIpcHandlers(prisma: PrismaClient): void {
   const usuariosRepository = new UsuariosRepository(prisma)
   const usuariosService = new UsuariosService(usuariosRepository)
   registerUsuariosIpc(usuariosService)
+
+  registerRolesIpc(new RolesService(new RolesRepository(prisma)))
 
   const authService = new AuthService(usuariosRepository)
   registerAuthIpc(authService)

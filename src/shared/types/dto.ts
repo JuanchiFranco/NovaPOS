@@ -1,3 +1,4 @@
+import type { Permiso } from '../constants/permisos'
 /**
  * DTOs compartidos entre el proceso main (Prisma) y el renderer (React).
  * Se definen de forma independiente del cliente de Prisma para no acoplar el
@@ -223,6 +224,10 @@ export interface RolDTO {
   id: number
   nombre: string
   descripcion: string | null
+  permisos: Permiso[]
+  /** El rol Administrador: tiene todos los permisos y no se puede editar ni eliminar. */
+  esSistema: boolean
+  totalUsuarios: number
 }
 
 export interface UsuarioDTO {
@@ -235,6 +240,8 @@ export interface UsuarioDTO {
   esAdministrador: boolean
   /** Solo presente en la sesión activa: true mientras el usuario conserve la contraseña inicial por defecto. */
   debeCambiarPassword?: boolean
+  /** Permisos efectivos del rol del usuario. */
+  permisos: Permiso[]
   createdAt: string
 }
 

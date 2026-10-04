@@ -16,7 +16,7 @@ import { formatCurrency, formatDateTime } from '../../../shared/lib/format'
 import { useCartStore } from '../../../shared/store/cart.store'
 import { useFacturas } from '../hooks/useFacturas'
 import { useAnularVenta } from '../../ventas/hooks/useVentas'
-import { useSessionStore } from '../../../shared/store/session.store'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { FacturaDetalleModal } from '../components/FacturaDetalleModal'
 
 const PAGE_SIZE = 10
@@ -37,7 +37,7 @@ export default function FacturasPage(): JSX.Element {
   const [duplicando, setDuplicando] = useState<number | null>(null)
   const [toAnular, setToAnular] = useState<FacturaDTO | null>(null)
   const anularVentaMutation = useAnularVenta()
-  const esAdministrador = useSessionStore((s) => s.usuario?.esAdministrador ?? false)
+  const puedeAnular = usePermiso('ventas.anular')
 
   const params = useMemo(
     () => ({
@@ -142,7 +142,7 @@ export default function FacturasPage(): JSX.Element {
           >
             <Copy className="h-4 w-4" />
           </button>
-          {esAdministrador && f.estado === 'EMITIDA' && (
+          {puedeAnular && f.estado === 'EMITIDA' && (
             <button
               onClick={() => setToAnular(f)}
               className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"

@@ -38,7 +38,7 @@ CREATE INDEX IF NOT EXISTS "auditoria_entidad_entidadId_idx" ON "auditoria" ("en
 
 CREATE TABLE IF NOT EXISTS "configuracion" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-  "nombreComercial" TEXT NOT NULL DEFAULT 'VARIEDADES J&A',
+  "nombreComercial" TEXT NOT NULL DEFAULT 'Mi negocio',
   "eslogan" TEXT,
   "mensajePie" TEXT,
   "nit" TEXT,
@@ -193,10 +193,7 @@ CREATE INDEX IF NOT EXISTS "detalle_compra_facturaCompraId_idx" ON "detalle_comp
 
 -- Datos iniciales (idempotentes)
 INSERT INTO "configuracion" ("id", "nombreComercial", "eslogan", "mensajePie")
-SELECT 1, 'VARIEDADES J&A', 'VENTA DE: VELAS, VELADORAS Y MUCHO MAS',
-  'HACERCATE PARA TENER EL GUSTO DE ATENDERTE
-
-TODO LO PUEDO EN CRISTO QUE ME FORTALECE'
+SELECT 1, 'Mi negocio', NULL, NULL
 WHERE NOT EXISTS (SELECT 1 FROM "configuracion" WHERE "id" = 1);
 
 INSERT INTO "roles" ("nombre", "descripcion", "permisos")

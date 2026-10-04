@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Eye, Plus, ShoppingBag, Trash2 } from 'lucide-react'
 import type { FacturaCompraDTO } from '@shared/types/dto'
 import type { FacturaCompraFormValues } from '@shared/schemas/facturaCompra.schema'
+import { usePermiso } from '../../../shared/hooks/usePermiso'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
 import { Input } from '../../../shared/components/Input'
@@ -29,6 +30,8 @@ export default function ComprasPage(): JSX.Element {
   const [page, setPage] = useState(1)
   const debounced = useDebounce(proveedorNombre, 300)
 
+  const puedeCrear = usePermiso('compras.crear')
+  const puedeEliminar = usePermiso('compras.eliminar')
   const [modalOpen, setModalOpen] = useState(false)
   const [detalle, setDetalle] = useState<FacturaCompraDTO | null>(null)
   const [toDelete, setToDelete] = useState<FacturaCompraDTO | null>(null)
@@ -72,13 +75,15 @@ export default function ComprasPage(): JSX.Element {
           >
             <Eye className="h-4 w-4" />
           </button>
-          <button
-            onClick={() => setToDelete(c)}
-            className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
-            title="Eliminar"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {puedeEliminar && (
+            <button
+              onClick={() => setToDelete(c)}
+              className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+              title="Eliminar"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       )
     }
@@ -89,11 +94,11 @@ export default function ComprasPage(): JSX.Element {
       <PageHeader
         title="Compras a proveedores"
         description="Registra las facturas de compra recibidas de tus proveedores."
-        actions={
+        actions={puedeCrear ? (
           <Button onClick={() => setModalOpen(true)}>
             <Plus className="h-4 w-4" /> Registrar compra
           </Button>
-        }
+        ) : undefined}
       />
 
       <Card>

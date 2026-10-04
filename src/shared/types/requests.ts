@@ -175,6 +175,14 @@ export type UsuarioUpdateInput = Partial<Omit<UsuarioCreateInput, 'password'>> &
   password?: string
 }
 
+export interface RolCreateInput {
+  nombre: string
+  descripcion?: string
+  permisos: string[]
+}
+
+export type RolUpdateInput = Partial<RolCreateInput>
+
 export interface CambiarPasswordInput {
   actual: string
   nueva: string
