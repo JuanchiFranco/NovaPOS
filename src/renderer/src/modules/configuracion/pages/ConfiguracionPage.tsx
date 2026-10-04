@@ -106,8 +106,9 @@ export default function ConfiguracionPage(): JSX.Element {
       </div>
 
       {tab === 'general' && (
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-2">
+          <Card className="space-y-4">
             <h2 className="font-medium text-slate-800 dark:text-slate-200">Información del negocio</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input label="Nombre comercial" error={errors.nombreComercial?.message} {...register('nombreComercial')} />
@@ -157,6 +158,7 @@ export default function ConfiguracionPage(): JSX.Element {
               </Button>
             </div>
           </Card>
+          </form>
 
           <div className="space-y-6">
             <Card className="space-y-4">
@@ -184,7 +186,7 @@ export default function ConfiguracionPage(): JSX.Element {
 
             <CambiarPasswordCard />
           </div>
-        </form>
+        </div>
       )}
 
       {tab === 'usuarios' && esAdmin && <UsuariosTab />}
