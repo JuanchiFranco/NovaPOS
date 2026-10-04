@@ -5,12 +5,12 @@ import { createBackup, listBackups, restoreBackup } from '../../database/backup.
 import type { ImpresoraDTO } from '@shared/types/dto'
 
 export function registerSistemaIpc(): void {
-  handle(IPC.sistema.backupNow, () => createBackup())
-  handle(IPC.sistema.listBackups, () => listBackups())
+  handle(IPC.sistema.backupNow, () => createBackup(), 'admin')
+  handle(IPC.sistema.listBackups, () => listBackups(), 'admin')
   handle(IPC.sistema.restoreBackup, (fileName: string) => {
     restoreBackup(fileName)
     return true
-  })
+  }, 'admin')
 
   handle(IPC.sistema.listarImpresoras, async (): Promise<ImpresoraDTO[]> => {
     const win = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0]

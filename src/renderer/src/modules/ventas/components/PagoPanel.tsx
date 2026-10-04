@@ -60,6 +60,12 @@ export function PagoPanel({
           <span>Descuento</span>
           <span>- {formatCurrency(totales.descuentoTotal)}</span>
         </div>
+        {totales.iva > 0 && (
+          <div className="flex justify-between text-slate-500">
+            <span>IVA incluido</span>
+            <span>{formatCurrency(totales.iva)}</span>
+          </div>
+        )}
         <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 text-base font-semibold text-slate-900 dark:border-slate-700 dark:text-slate-100">
           <span>Total</span>
           <span>{formatCurrency(totales.total)}</span>

@@ -5,8 +5,9 @@ import type { ConfiguracionService } from './configuracion.service'
 import type { ConfiguracionUpdateInput } from '@shared/types/requests'
 
 export function registerConfiguracionIpc(service: ConfiguracionService): void {
-  handle(IPC.configuracion.get, () => service.get())
-  handle(IPC.configuracion.update, (input: ConfiguracionUpdateInput) => service.update(input))
+  // Público: la pantalla de login muestra el nombre y logo del negocio antes de autenticarse.
+  handle(IPC.configuracion.get, () => service.get(), 'public')
+  handle(IPC.configuracion.update, (input: ConfiguracionUpdateInput) => service.update(input), 'admin')
   handle(IPC.configuracion.seleccionarLogo, async () => {
     const result = await dialog.showOpenDialog({
       title: 'Seleccionar logo del negocio',
@@ -16,6 +17,6 @@ export function registerConfiguracionIpc(service: ConfiguracionService): void {
     if (result.canceled || result.filePaths.length === 0) return null
     const logoPath = result.filePaths[0]
     return service.updateLogoPath(logoPath)
-  })
-  handle(IPC.configuracion.setImpresora, (nombre: string) => service.setImpresora(nombre))
+  }, 'admin')
+  handle(IPC.configuracion.setImpresora, (nombre: string) => service.setImpresora(nombre), 'admin')
 }

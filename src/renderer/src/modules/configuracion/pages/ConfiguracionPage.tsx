@@ -142,6 +142,14 @@ export default function ConfiguracionPage(): JSX.Element {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input label="Moneda (ISO)" error={errors.moneda?.message} {...register('moneda')} />
               <Input label="Símbolo de moneda" error={errors.simboloMoneda?.message} {...register('simboloMoneda')} />
+              <Input
+                label="IVA incluido en los precios (%)"
+                type="number"
+                step="0.01"
+                hint="Los precios de venta ya incluyen IVA; este % solo se desglosa en la factura. Usa 0 si no discriminas IVA."
+                error={errors.porcentajeIva?.message}
+                {...register('porcentajeIva')}
+              />
               <Input label="Prefijo de factura" error={errors.prefijoFactura?.message} {...register('prefijoFactura')} />
               <Input
                 label="Número inicial de factura"

@@ -233,6 +233,8 @@ export interface UsuarioDTO {
   rolId: number
   rolNombre: string
   esAdministrador: boolean
+  /** Solo presente en la sesión activa: true mientras el usuario conserve la contraseña inicial por defecto. */
+  debeCambiarPassword?: boolean
   createdAt: string
 }
 

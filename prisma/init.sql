@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS "configuracion" (
   "telefono" TEXT,
   "correo" TEXT,
   "logoPath" TEXT,
-  "porcentajeIva" REAL NOT NULL DEFAULT 19,
+  "porcentajeIva" REAL NOT NULL DEFAULT 0,
   "moneda" TEXT NOT NULL DEFAULT 'COP',
   "simboloMoneda" TEXT NOT NULL DEFAULT '$',
   "prefijoFactura" TEXT NOT NULL DEFAULT 'FAC',

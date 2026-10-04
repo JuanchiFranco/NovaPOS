@@ -7,5 +7,5 @@ export function registerComprasIpc(service: ComprasService): void {
   handle(IPC.compras.list, (params: FacturaCompraListParams) => service.list(params ?? {}))
   handle(IPC.compras.getById, (id: number) => service.getById(id))
   handle(IPC.compras.create, (input: FacturaCompraCreateInput) => service.create(input))
-  handle(IPC.compras.remove, (id: number) => service.remove(id))
+  handle(IPC.compras.remove, (id: number) => service.remove(id), 'admin')
 }

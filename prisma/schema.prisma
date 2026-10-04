@@ -70,7 +70,7 @@ model Configuracion {
   telefono           String?
   correo             String?
   logoPath           String?
-  porcentajeIva      Float    @default(19)
+  porcentajeIva      Float    @default(0)
   moneda             String   @default("COP")
   simboloMoneda      String   @default("$")
   prefijoFactura     String   @default("FAC")

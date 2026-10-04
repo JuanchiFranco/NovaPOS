@@ -8,7 +8,7 @@ export function registerProductosIpc(service: ProductosService): void {
   handle(IPC.productos.getById, (id: number) => service.getById(id))
   handle(IPC.productos.create, (input: ProductoCreateInput) => service.create(input))
   handle(IPC.productos.update, (id: number, input: ProductoUpdateInput) => service.update(id, input))
-  handle(IPC.productos.remove, (id: number) => service.remove(id))
+  handle(IPC.productos.remove, (id: number) => service.remove(id), 'admin')
   handle(IPC.productos.lowStock, () => service.lowStock())
   handle(IPC.productos.categorias, () => service.categorias())
 }

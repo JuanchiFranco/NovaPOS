@@ -35,6 +35,22 @@ function toDTO(venta: VentaConDetalle): VentaDTO {
   }
 }
 
+const TOLERANCIA_MONTO = 0.005
+
+function redondear(valor: number): number {
+  return Number(valor.toFixed(2))
+}
+
+function igualesMonto(a: number, b: number): boolean {
+  return Math.abs(a - b) < TOLERANCIA_MONTO
+}
+
+/** IVA contenido en un total que ya lo incluye. */
+export function calcularIvaIncluido(total: number, porcentajeIva: number): number {
+  if (porcentajeIva <= 0) return 0
+  return redondear(total - total / (1 + porcentajeIva / 100))
+}
+
 export class VentasService {
   constructor(private readonly repo: VentasRepository) {}
 
@@ -62,29 +78,58 @@ export class VentasService {
       if (!producto.activo) throw new ValidationError(`El producto "${producto.nombre}" está inactivo.`)
     }
 
-    const items = parsed.items.map((item) => ({
-      productoId: item.productoId,
-      cantidad: item.cantidad,
-      precioUnitario: item.precioUnitario,
-      descuento: item.descuento,
-      subtotal: Math.max(0, item.precioUnitario * item.cantidad - item.descuento)
-    }))
+    // El precio NUNCA se toma de lo que envía la interfaz: debe coincidir con el precio vigente
+    // del producto en la base de datos (detal o mayorista). Así un cliente IPC manipulado no puede
+    // vender por debajo del precio configurado.
+    const items = parsed.items.map((item) => {
+      const producto = productosPorId.get(item.productoId)!
+      const esPrecioDetal = igualesMonto(item.precioUnitario, producto.precioVenta)
+      const esPrecioMayorista = producto.precioMayorista != null && igualesMonto(item.precioUnitario, producto.precioMayorista)
+      if (!esPrecioDetal && !esPrecioMayorista) {
+        throw new ValidationError(
+          `El precio de "${producto.nombre}" cambió o no es válido. Actualiza el carrito e inténtalo de nuevo.`
+        )
+      }
+      const bruto = item.precioUnitario * item.cantidad
+      if (item.descuento > bruto) {
+        throw new ValidationError(`El descuento de "${producto.nombre}" no puede superar el valor de la línea.`)
+      }
+      return {
+        productoId: item.productoId,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        descuento: item.descuento,
+        subtotal: Math.max(0, bruto - item.descuento)
+      }
+    })
 
     const subtotalBruto = items.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0)
     const descuentoItems = items.reduce((acc, i) => acc + i.descuento, 0)
     const descuentoGlobal = parsed.descuentoGlobal
+    if (descuentoGlobal > subtotalBruto - descuentoItems) {
+      throw new ValidationError('El descuento global no puede superar el total de la venta.')
+    }
     const descuentoTotal = descuentoItems + descuentoGlobal
     const baseImponible = Math.max(0, subtotalBruto - descuentoTotal)
 
-    // No se cobra IVA: el total es la base imponible sin recargo.
-    const iva = 0
-    const total = Number(baseImponible.toFixed(2))
+    // Los precios ya incluyen IVA: el total no cambia, el IVA se desglosa según el % configurado
+    // (con 0 % no se discrimina IVA).
+    const porcentajeIva = await this.repo.getPorcentajeIva()
+    const total = redondear(baseImponible)
+    const iva = calcularIvaIncluido(total, porcentajeIva)
+
+    if (parsed.metodoPago === 'MIXTO') {
+      const pagado = (parsed.montoEfectivo ?? 0) + (parsed.montoTarjeta ?? 0) + (parsed.montoTransferencia ?? 0)
+      if (pagado + 0.01 < total) {
+        throw new ValidationError('La suma de los pagos mixtos es menor al total de la venta.')
+      }
+    }
 
     const venta = await this.repo.createVentaConFactura({
       clienteId: parsed.clienteId ?? null,
       usuarioId: getSessionUserId(),
-      subtotal: Number(subtotalBruto.toFixed(2)),
-      descuento: Number(descuentoTotal.toFixed(2)),
+      subtotal: redondear(subtotalBruto),
+      descuento: redondear(descuentoTotal),
       iva,
       total,
       metodoPago: parsed.metodoPago,
@@ -101,9 +146,5 @@ export class VentasService {
   async anular(id: number): Promise<VentaDTO> {
     const venta = await this.repo.anular(id)
     return toDTO(venta)
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.repo.remove(id)
   }
 }

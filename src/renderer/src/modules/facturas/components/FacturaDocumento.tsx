@@ -116,6 +116,12 @@ export function FacturaDocumento({ factura, config }: FacturaDocumentoProps): JS
               {formatCurrency(factura.total)}
             </td>
           </tr>
+          {factura.iva > 0 && (
+            <tr>
+              <td className="border-2 border-black p-2 text-center text-sm">IVA incluido ({config.porcentajeIva}%)</td>
+              <td className="border-2 border-black p-2 text-right text-sm">{formatCurrency(factura.iva)}</td>
+            </tr>
+          )}
         </tbody>
       </table>
 

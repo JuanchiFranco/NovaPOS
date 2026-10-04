@@ -16,6 +16,7 @@ const ComprasPage = lazy(() => import('../../modules/compras/pages/ComprasPage')
 const ReportesPage = lazy(() => import('../../modules/reportes/pages/ReportesPage'))
 const AuditoriaPage = lazy(() => import('../../modules/auditoria/pages/AuditoriaPage'))
 const LoginPage = lazy(() => import('../../modules/auth/pages/LoginPage'))
+const CambioPasswordObligatorioPage = lazy(() => import('../../modules/auth/pages/CambioPasswordObligatorioPage'))
 
 function SuspenseFallback(): JSX.Element {
   return <Spinner />
@@ -31,6 +32,7 @@ function RequireAuth({ children }: { children: JSX.Element }): JSX.Element {
 
   if (cargando) return <SuspenseFallback />
   if (!usuario) return <LoginPage />
+  if (usuario.debeCambiarPassword) return <CambioPasswordObligatorioPage />
   return children
 }
 

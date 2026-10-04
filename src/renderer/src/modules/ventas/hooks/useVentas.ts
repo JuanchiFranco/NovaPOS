@@ -21,16 +21,17 @@ export function useCreateVenta() {
   })
 }
 
-export function useRemoveVenta() {
+export function useAnularVenta() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => window.api.ventas.remove(id),
+    mutationFn: (id: number) => window.api.ventas.anular(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ventas'] })
       queryClient.invalidateQueries({ queryKey: ['facturas'] })
       queryClient.invalidateQueries({ queryKey: ['productos'] })
+      queryClient.invalidateQueries({ queryKey: ['inventario'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      toast.success('Venta eliminada')
+      toast.success('Venta anulada y stock devuelto')
     },
     onError: (error: Error) => toast.error(error.message)
   })

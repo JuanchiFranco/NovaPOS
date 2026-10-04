@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Copy, Download, Eye, FileText, Trash2 } from 'lucide-react'
+import { Ban, Copy, Download, Eye, FileText } from 'lucide-react'
 import type { FacturaDTO, MetodoPago } from '@shared/types/dto'
 import { PageHeader } from '../../../shared/components/PageHeader'
 import { Card } from '../../../shared/components/Card'
@@ -15,7 +15,8 @@ import { ClienteAutocomplete } from '../../../shared/components/ClienteAutocompl
 import { formatCurrency, formatDateTime } from '../../../shared/lib/format'
 import { useCartStore } from '../../../shared/store/cart.store'
 import { useFacturas } from '../hooks/useFacturas'
-import { useRemoveVenta } from '../../ventas/hooks/useVentas'
+import { useAnularVenta } from '../../ventas/hooks/useVentas'
+import { useSessionStore } from '../../../shared/store/session.store'
 import { FacturaDetalleModal } from '../components/FacturaDetalleModal'
 
 const PAGE_SIZE = 10
@@ -34,8 +35,9 @@ export default function FacturasPage(): JSX.Element {
   const [page, setPage] = useState(1)
   const [detalle, setDetalle] = useState<FacturaDTO | null>(null)
   const [duplicando, setDuplicando] = useState<number | null>(null)
-  const [toDelete, setToDelete] = useState<FacturaDTO | null>(null)
-  const removeVentaMutation = useRemoveVenta()
+  const [toAnular, setToAnular] = useState<FacturaDTO | null>(null)
+  const anularVentaMutation = useAnularVenta()
+  const esAdministrador = useSessionStore((s) => s.usuario?.esAdministrador ?? false)
 
   const params = useMemo(
     () => ({
@@ -140,13 +142,15 @@ export default function FacturasPage(): JSX.Element {
           >
             <Copy className="h-4 w-4" />
           </button>
-          <button
-            onClick={() => setToDelete(f)}
-            className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
-            title="Eliminar venta"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {esAdministrador && f.estado === 'EMITIDA' && (
+            <button
+              onClick={() => setToAnular(f)}
+              className="rounded-md p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+              title="Anular venta"
+            >
+              <Ban className="h-4 w-4" />
+            </button>
+          )}
         </div>
       )
     }
@@ -204,14 +208,14 @@ export default function FacturasPage(): JSX.Element {
       <FacturaDetalleModal factura={detalle} onClose={() => setDetalle(null)} />
 
       <ConfirmDialog
-        open={Boolean(toDelete)}
-        title="Eliminar venta"
-        message={`¿Seguro que deseas eliminar la venta ${toDelete?.numero}? Se eliminará la factura asociada, se devolverá el stock de los productos vendidos, y esta acción no se puede deshacer.`}
+        open={Boolean(toAnular)}
+        title="Anular venta"
+        message={`¿Seguro que deseas anular la factura ${toAnular?.numero}? Quedará registrada como anulada (no se borra), se devolverá el stock de los productos vendidos, y esta acción no se puede deshacer.`}
         danger
-        loading={removeVentaMutation.isPending}
-        onCancel={() => setToDelete(null)}
+        loading={anularVentaMutation.isPending}
+        onCancel={() => setToAnular(null)}
         onConfirm={() => {
-          if (toDelete) removeVentaMutation.mutate(toDelete.ventaId, { onSuccess: () => setToDelete(null) })
+          if (toAnular) anularVentaMutation.mutate(toAnular.ventaId, { onSuccess: () => setToAnular(null) })
         }}
       />
     </div>

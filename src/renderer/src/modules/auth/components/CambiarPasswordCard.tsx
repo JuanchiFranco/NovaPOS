@@ -7,7 +7,12 @@ import { Card } from '../../../shared/components/Card'
 import { Input } from '../../../shared/components/Input'
 import { Button } from '../../../shared/components/Button'
 
-export function CambiarPasswordCard(): JSX.Element {
+interface CambiarPasswordCardProps {
+  /** Se ejecuta tras cambiar la contraseña con éxito (p. ej. para refrescar la sesión). */
+  onSuccess?: () => void
+}
+
+export function CambiarPasswordCard({ onSuccess }: CambiarPasswordCardProps = {}): JSX.Element {
   const {
     register,
     handleSubmit,
@@ -20,6 +25,7 @@ export function CambiarPasswordCard(): JSX.Element {
       await window.api.auth.cambiarPassword({ actual: values.actual, nueva: values.nueva })
       toast.success('Contraseña actualizada')
       reset()
+      onSuccess?.()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'No se pudo cambiar la contraseña')
     }

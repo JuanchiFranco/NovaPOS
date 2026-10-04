@@ -7,6 +7,7 @@ import { Card } from '../../../shared/components/Card'
 import { Button } from '../../../shared/components/Button'
 import { Modal } from '../../../shared/components/Modal'
 import { useCartStore } from '../../../shared/store/cart.store'
+import { useConfiguracion } from '../../configuracion/hooks/useConfiguracion'
 import { calcularTotales } from '../utils/calcularTotales'
 import { ClienteSelector } from '../components/ClienteSelector'
 import { TipoPrecioSelector } from '../components/TipoPrecioSelector'
@@ -18,6 +19,7 @@ import { useCreateVenta } from '../hooks/useVentas'
 export default function VentasPage(): JSX.Element {
   const cart = useCartStore()
   const createVenta = useCreateVenta()
+  const { data: config } = useConfiguracion()
 
   const [descuentoGlobal, setDescuentoGlobal] = useState(0)
   const [metodoPago, setMetodoPago] = useState<MetodoPago>('EFECTIVO')
@@ -26,7 +28,7 @@ export default function VentasPage(): JSX.Element {
   const [montoTransferencia, setMontoTransferencia] = useState(0)
   const [facturaEmitida, setFacturaEmitida] = useState<FacturaDTO | null>(null)
 
-  const totales = calcularTotales(cart.items, descuentoGlobal)
+  const totales = calcularTotales(cart.items, descuentoGlobal, config?.porcentajeIva ?? 0)
 
   const montoHandlers = {
     montoEfectivo: setMontoEfectivo,
